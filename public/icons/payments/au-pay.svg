@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- カード枠 -->
+  <rect x="3" y="4" width="18" height="16" rx="3"/>
+  <!-- auの特徴的な三角形デザイン -->
+  <path d="M12 7l-4 6h8z" fill="currentColor" opacity="0.8"/>
+  <path d="M12 9l-2.5 4h5z" fill="white"/>
+  <!-- PAYの線 -->
+  <rect x="8" y="14" width="8" height="1" fill="currentColor"/>
+  <rect x="9" y="15.5" width="6" height="1" fill="currentColor"/>
+</svg>
