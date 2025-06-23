@@ -15,13 +15,15 @@ const formatDateLocal = (date: Date): string => {
 }
 
 export interface DateRange {
-  from: string
-  to: string
+  from: string | null
+  to: string | null
 }
 
 interface DateRangePickerProps {
   value: DateRange
   onChange: (range: DateRange) => void
+  onClear?: () => void
+  allowClear?: boolean
   placeholder?: string
   className?: string
 }
@@ -127,7 +129,14 @@ const PRESET_OPTIONS: PresetOption[] = [
   }
 ]
 
-export function DateRangePicker({ value, onChange, placeholder = "日付範囲を選択", className }: DateRangePickerProps) {
+export function DateRangePicker({ 
+  value, 
+  onChange, 
+  onClear, 
+  allowClear = true, 
+  placeholder = "日付範囲を選択", 
+  className 
+}: DateRangePickerProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [showCustom, setShowCustom] = useState(true) // デフォルトでカスタム範囲表示
   const [currentMonth, setCurrentMonth] = useState(new Date())
@@ -155,9 +164,25 @@ export function DateRangePicker({ value, onChange, placeholder = "日付範囲�
 
   const formatDateRange = (range: DateRange) => {
     if (!range.from && !range.to) return placeholder
+    
+    // 同じ日付の場合
     if (range.from === range.to && range.from) {
       return new Date(range.from).toLocaleDateString('ja-JP')
     }
+    
+    // 開始日のみ選択されている場合
+    if (range.from && !range.to) {
+      const fromDate = new Date(range.from).toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' })
+      return `${fromDate} 〜 選択中...`
+    }
+    
+    // 終了日のみ選択されている場合（通常は起こらない）
+    if (!range.from && range.to) {
+      const toDate = new Date(range.to).toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' })
+      return `選択中... 〜 ${toDate}`
+    }
+    
+    // 両方選択されている場合
     const fromDate = range.from ? new Date(range.from).toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' }) : ''
     const toDate = range.to ? new Date(range.to).toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' }) : ''
     return `${fromDate} 〜 ${toDate}`
@@ -168,6 +193,17 @@ export function DateRangePicker({ value, onChange, placeholder = "日付範囲�
     onChange(newRange)
     setIsOpen(false)
     // setShowCustom(false) を削除して、次回もカスタム範囲がデフォルトになるように
+  }
+
+  const handleClear = () => {
+    const emptyRange: DateRange = { from: null, to: null }
+    onChange(emptyRange)
+    if (onClear) {
+      onClear()
+    }
+    setIsOpen(false)
+    setTempRange(emptyRange)
+    setSelectingStart(true)
   }
 
   const handleCustomSelect = () => {
@@ -198,7 +234,7 @@ export function DateRangePicker({ value, onChange, placeholder = "日付範囲�
     const dateString = formatDateLocal(date)
     
     if (selectingStart || !tempRange.from) {
-      const newTempRange = { from: dateString, to: '' }
+      const newTempRange = { from: dateString, to: null }
       setTempRange(newTempRange)
       setSelectingStart(false)
     } else {
@@ -262,6 +298,18 @@ export function DateRangePicker({ value, onChange, placeholder = "日付範囲�
         <span className="text-sm text-primary-700 flex-1">
           {formatDateRange(value)}
         </span>
+        {allowClear && (value.from || value.to) && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              handleClear()
+            }}
+            className="p-1 hover:bg-primary-100 rounded transition-colors"
+            title="日付範囲をクリア"
+          >
+            <Icon name="x" category="ui" size="sm" className="text-primary-400 hover:text-primary-600" />
+          </button>
+        )}
         <Icon 
           name="chevron-down" 
           category="ui" 
@@ -380,17 +428,28 @@ export function DateRangePicker({ value, onChange, placeholder = "日付範囲�
                     <div className="text-sm text-primary-600">
                       {formatDateRange(tempRange)}
                     </div>
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        onChange(tempRange)
-                        setIsOpen(false)
-                        // setShowCustom(false) を削除して、次回もカスタム範囲がデフォルトになるように
-                        setSelectingStart(true)
-                      }}
-                    >
-                      適用
-                    </Button>
+                    <div className="flex gap-2">
+                      {allowClear && (
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={handleClear}
+                        >
+                          クリア
+                        </Button>
+                      )}
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          onChange(tempRange)
+                          setIsOpen(false)
+                          // setShowCustom(false) を削除して、次回もカスタム範囲がデフォルトになるように
+                          setSelectingStart(true)
+                        }}
+                      >
+                        適用
+                      </Button>
+                    </div>
                   </div>
                 </div>
               )}

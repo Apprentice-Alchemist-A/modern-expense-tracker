@@ -188,6 +188,7 @@ function ExpensesPageContent() {
             onFiltersChange={urlParams.updateFilters}
             sort={sort}
             onSortChange={urlParams.updateSort}
+            onResetAll={urlParams.resetAll}
             totalCount={totalExpenses}
             filteredCount={rawExpenses.length}
             viewMode={viewMode}

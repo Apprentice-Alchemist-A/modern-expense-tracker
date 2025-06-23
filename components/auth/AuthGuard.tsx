@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuth } from './AuthProvider'
 import { signInWithGoogle } from '@/lib/supabase/auth'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card'
@@ -24,7 +24,7 @@ export function AuthGuard({
       user: !!user, 
       userId: user?.id,
       loading, 
-      requireAuth 
+      requireAuth
     })
     
     if (!loading && requireAuth && !user && redirectTo) {

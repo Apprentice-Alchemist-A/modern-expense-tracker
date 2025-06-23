@@ -170,13 +170,15 @@ export function useUrlParams(): UseUrlParamsReturn {
     const params = new URLSearchParams(searchParams.toString())
     
     // 既存のフィルターパラメータを削除
-    Object.values(PARAM_KEYS).forEach(key => {
-      if (key !== PARAM_KEYS.page && key !== PARAM_KEYS.itemsPerPage) {
-        params.delete(key)
-      }
-    })
+    params.delete(PARAM_KEYS.dateFrom)
+    params.delete(PARAM_KEYS.dateTo)
+    params.delete(PARAM_KEYS.categories)
+    params.delete(PARAM_KEYS.paymentMethods)
+    params.delete(PARAM_KEYS.amountMin)
+    params.delete(PARAM_KEYS.amountMax)
+    params.delete(PARAM_KEYS.searchText)
     
-    // 新しいフィルターを設定
+    // 新しいフィルターを設定（値が存在する場合のみ）
     if (filters.dateFrom) params.set(PARAM_KEYS.dateFrom, filters.dateFrom)
     if (filters.dateTo) params.set(PARAM_KEYS.dateTo, filters.dateTo)
     if (filters.categories?.length) params.set(PARAM_KEYS.categories, filters.categories.join(','))
@@ -189,7 +191,8 @@ export function useUrlParams(): UseUrlParamsReturn {
     params.delete(PARAM_KEYS.page)
     
     const newUrl = params.toString() ? `?${params.toString()}` : ''
-    router.push(newUrl, { scroll: false })
+    const fullUrl = newUrl || '/expenses'
+    router.push(fullUrl, { scroll: false })
   }, [searchParams.toString(), router])
 
   const updateSort = useCallback((sort: ExpenseSort | null) => {
@@ -209,7 +212,8 @@ export function useUrlParams(): UseUrlParamsReturn {
     params.delete(PARAM_KEYS.page)
     
     const newUrl = params.toString() ? `?${params.toString()}` : ''
-    router.push(newUrl, { scroll: false })
+    const fullUrl = newUrl || '/expenses'
+    router.push(fullUrl, { scroll: false })
   }, [searchParams.toString(), router])
 
   const updatePage = useCallback((page: number) => {
@@ -222,7 +226,8 @@ export function useUrlParams(): UseUrlParamsReturn {
     }
     
     const newUrl = params.toString() ? `?${params.toString()}` : ''
-    router.push(newUrl, { scroll: false })
+    const fullUrl = newUrl || '/expenses'
+    router.push(fullUrl, { scroll: false })
   }, [searchParams.toString(), router])
 
   const updateItemsPerPage = useCallback((itemsPerPage: number) => {
@@ -238,11 +243,12 @@ export function useUrlParams(): UseUrlParamsReturn {
     params.delete(PARAM_KEYS.page)
     
     const newUrl = params.toString() ? `?${params.toString()}` : ''
-    router.push(newUrl, { scroll: false })
+    const fullUrl = newUrl || '/expenses'
+    router.push(fullUrl, { scroll: false })
   }, [searchParams.toString(), router])
 
   const resetAll = useCallback(() => {
-    router.push('', { scroll: false })
+    router.push('/expenses', { scroll: false })
   }, [router])
 
   return {

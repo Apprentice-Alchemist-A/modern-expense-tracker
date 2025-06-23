@@ -28,10 +28,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const supabase = getSupabaseClient()
 
   useEffect(() => {
+    let isMounted = true
+    
     // 初回のセッション取得
     const getInitialSession = async () => {
       try {
+        console.log('AuthProvider: Starting session check...')
+        
         const { data: { session }, error } = await supabase.auth.getSession()
+        
+        if (!isMounted) return // コンポーネントがアンマウントされている場合は処理しない
+        
         console.log('AuthProvider: Initial session check:', { 
           hasSession: !!session,
           hasUser: !!session?.user,
@@ -47,11 +54,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setLoading(false)
       } catch (err) {
         console.error('AuthProvider: Failed to get session:', err)
-        setLoading(false)
+        if (isMounted) {
+          setUser(null)
+          setLoading(false)
+        }
       }
     }
 
     getInitialSession()
+
+    // 緊急用タイムアウト（3秒）
+    const emergencyTimeout = setTimeout(() => {
+      if (isMounted) {
+        console.warn('AuthProvider: Emergency timeout - forcing loading to false')
+        setLoading(false)
+      }
+    }, 3000)
 
     // 認証状態の変更を監視
     const {
@@ -67,7 +85,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false)
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      isMounted = false
+      subscription.unsubscribe()
+      clearTimeout(emergencyTimeout)
+    }
   }, [supabase])
 
   return (

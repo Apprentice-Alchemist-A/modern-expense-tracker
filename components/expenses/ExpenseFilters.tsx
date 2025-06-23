@@ -33,6 +33,7 @@ interface ExpenseFiltersProps {
   onFiltersChange: (filters: ExpenseFiltersType) => void
   sort: ExpenseSort | null
   onSortChange: (sort: ExpenseSort | null) => void
+  onResetAll?: () => void
   totalCount: number
   filteredCount: number
   viewMode?: 'card' | 'list' | 'table'
@@ -55,6 +56,7 @@ export function ExpenseFilters({
   onFiltersChange,
   sort,
   onSortChange,
+  onResetAll,
   totalCount,
   filteredCount,
   viewMode = 'card',
@@ -85,14 +87,21 @@ export function ExpenseFilters({
   }
 
   const clearAllFilters = () => {
-    onFiltersChange({})
+    if (onResetAll) {
+      // resetAll関数が提供されている場合は、それを使う（推奨）
+      onResetAll()
+    } else {
+      // フォールバック: 個別にクリア
+      onFiltersChange({})
+      onSortChange(null)
+    }
   }
 
   const hasActiveFilters = !!(
     filters.dateFrom || filters.dateTo || 
     (filters.categories && filters.categories.length > 0) || 
     (filters.paymentMethods && filters.paymentMethods.length > 0) ||
-    filters.amountMin || filters.amountMax || filters.searchText
+    filters.amountMin || filters.amountMax || filters.searchText || sort
   )
 
   const toggleSort = (field: SortField) => {
@@ -210,15 +219,16 @@ export function ExpenseFilters({
               日付範囲
             </label>
             <DateRangePicker
-              value={{ from: filters.dateFrom || '', to: filters.dateTo || '' }}
+              value={{ from: filters.dateFrom || null, to: filters.dateTo || null }}
               onChange={(range: DateRange) => {
                 // 一度に両方の値を更新
                 onFiltersChange({
                   ...filters,
-                  dateFrom: range.from,
-                  dateTo: range.to
+                  dateFrom: range.from || undefined,
+                  dateTo: range.to || undefined
                 })
               }}
+              allowClear={true}
               placeholder="日付範囲を選択してください"
               className="w-80"
             />
