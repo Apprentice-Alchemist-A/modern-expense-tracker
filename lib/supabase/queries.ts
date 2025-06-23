@@ -1,5 +1,5 @@
 import { getSupabaseClient } from './browser-client'
-import { Database } from '@/types/supabase'
+import { Database } from '@/types/database'
 
 type Category = Database['public']['Tables']['categories']['Row']
 type PaymentMethod = Database['public']['Tables']['payment_methods']['Row']
