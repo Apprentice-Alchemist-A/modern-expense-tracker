@@ -7,7 +7,9 @@ import { Icon } from '@/components/ui/Icon'
 import { DateRangePicker, DateRange } from '@/components/ui/DateRangePicker'
 import { useMasterDataFilters } from '@/hooks/useMasterDataFilters'
 import { cn } from '@/lib/utils/cn'
+import { ExpenseFilters as ExpenseFiltersType, ExpenseSort } from '@/lib/supabase/queries'
 
+// 旧フィルター型の定義（後方互換性のため残す）
 export interface FilterState {
   dateFrom: string
   dateTo: string
@@ -27,10 +29,10 @@ export interface SortState {
 }
 
 interface ExpenseFiltersProps {
-  filters: FilterState
-  onFiltersChange: (filters: FilterState) => void
-  sort: SortState
-  onSortChange: (sort: SortState) => void
+  filters: ExpenseFiltersType
+  onFiltersChange: (filters: ExpenseFiltersType) => void
+  sort: ExpenseSort | null
+  onSortChange: (sort: ExpenseSort | null) => void
   totalCount: number
   filteredCount: number
   viewMode?: 'card' | 'list' | 'table'
@@ -61,50 +63,63 @@ export function ExpenseFilters({
   const { categories, paymentMethods, loading: masterDataLoading, error: masterDataError } = useMasterDataFilters()
   const [isExpanded, setIsExpanded] = useState(false)
 
-  const updateFilter = (key: keyof FilterState, value: any) => {
+  const updateFilter = (key: keyof ExpenseFiltersType, value: any) => {
     const newFilters = { ...filters, [key]: value }
     onFiltersChange(newFilters)
   }
 
   const toggleCategory = (category: string) => {
-    const newCategories = filters.categories.includes(category)
-      ? filters.categories.filter(c => c !== category)
-      : [...filters.categories, category]
+    const currentCategories = filters.categories || []
+    const newCategories = currentCategories.includes(category)
+      ? currentCategories.filter(c => c !== category)
+      : [...currentCategories, category]
     updateFilter('categories', newCategories)
   }
 
   const togglePaymentMethod = (method: string) => {
-    const newMethods = filters.paymentMethods.includes(method)
-      ? filters.paymentMethods.filter(m => m !== method)
-      : [...filters.paymentMethods, method]
+    const currentMethods = filters.paymentMethods || []
+    const newMethods = currentMethods.includes(method)
+      ? currentMethods.filter(m => m !== method)
+      : [...currentMethods, method]
     updateFilter('paymentMethods', newMethods)
   }
 
   const clearAllFilters = () => {
-    onFiltersChange({
-      dateFrom: '',
-      dateTo: '',
-      categories: [],
-      paymentMethods: [],
-      amountMin: '',
-      amountMax: '',
-      searchText: ''
-    })
+    onFiltersChange({})
   }
 
-  const hasActiveFilters = 
+  const hasActiveFilters = !!(
     filters.dateFrom || filters.dateTo || 
-    filters.categories.length > 0 || filters.paymentMethods.length > 0 ||
+    (filters.categories && filters.categories.length > 0) || 
+    (filters.paymentMethods && filters.paymentMethods.length > 0) ||
     filters.amountMin || filters.amountMax || filters.searchText
+  )
 
   const toggleSort = (field: SortField) => {
-    if (sort.field === field) {
+    // SortFieldをExpenseSortのfieldにマップ
+    let newField: ExpenseSort['field']
+    switch (field) {
+      case 'store':
+        newField = 'category'
+        break
+      case 'date':
+      case 'amount':
+      case 'title':
+      case 'category':
+      case 'payment':
+        newField = field
+        break
+      default:
+        newField = 'date'
+    }
+    
+    if (sort && sort.field === newField) {
       onSortChange({
-        field,
+        field: newField,
         direction: sort.direction === 'asc' ? 'desc' : 'asc'
       })
     } else {
-      onSortChange({ field, direction: 'desc' })
+      onSortChange({ field: newField, direction: 'desc' })
     }
   }
 
@@ -133,7 +148,7 @@ export function ExpenseFilters({
             <Icon name="search" category="ui" size="sm" className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary-400" />
             <Input
               placeholder="店舗名、メモで検索..."
-              value={filters.searchText}
+              value={filters.searchText || ''}
               onChange={(e) => updateFilter('searchText', e.target.value)}
               className="pl-10 w-64"
               size="sm"
@@ -166,13 +181,13 @@ export function ExpenseFilters({
             {SORT_OPTIONS.map((option) => (
               <Button
                 key={option.field}
-                variant={sort.field === option.field ? 'primary' : 'ghost'}
+                variant={sort && (sort.field === option.field || (option.field === 'store' && sort.field === 'category')) ? 'primary' : 'ghost'}
                 size="sm"
                 onClick={() => toggleSort(option.field)}
                 className="flex items-center"
               >
                 {option.label}
-                {sort.field === option.field && (
+                {sort && (sort.field === option.field || (option.field === 'store' && sort.field === 'category')) && (
                   <Icon 
                     name={sort.direction === 'asc' ? 'chevron-up' : 'chevron-down'} 
                     category="ui" 
@@ -195,7 +210,7 @@ export function ExpenseFilters({
               日付範囲
             </label>
             <DateRangePicker
-              value={{ from: filters.dateFrom, to: filters.dateTo }}
+              value={{ from: filters.dateFrom || '', to: filters.dateTo || '' }}
               onChange={(range: DateRange) => {
                 // 一度に両方の値を更新
                 onFiltersChange({
@@ -218,7 +233,7 @@ export function ExpenseFilters({
               <Input
                 type="number"
                 placeholder="最小金額"
-                value={filters.amountMin}
+                value={filters.amountMin || ''}
                 onChange={(e) => updateFilter('amountMin', e.target.value)}
                 className="w-32"
                 size="sm"
@@ -227,7 +242,7 @@ export function ExpenseFilters({
               <Input
                 type="number"
                 placeholder="最大金額"
-                value={filters.amountMax}
+                value={filters.amountMax || ''}
                 onChange={(e) => updateFilter('amountMax', e.target.value)}
                 className="w-32"
                 size="sm"
@@ -250,7 +265,7 @@ export function ExpenseFilters({
                 {categories.map((category) => (
                   <Button
                     key={category.value}
-                    variant={filters.categories.includes(category.value) ? 'primary' : 'secondary'}
+                    variant={(filters.categories || []).includes(category.value) ? 'primary' : 'secondary'}
                     size="sm"
                     onClick={() => toggleCategory(category.value)}
                     className="flex items-center"
@@ -277,7 +292,7 @@ export function ExpenseFilters({
                 {paymentMethods.map((method) => (
                   <Button
                     key={method.value}
-                    variant={filters.paymentMethods.includes(method.value) ? 'primary' : 'secondary'}
+                    variant={(filters.paymentMethods || []).includes(method.value) ? 'primary' : 'secondary'}
                     size="sm"
                     onClick={() => togglePaymentMethod(method.value)}
                     className="flex items-center"

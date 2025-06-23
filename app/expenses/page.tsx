@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { PageHeader } from '@/components/layout/PageHeader'
@@ -20,6 +20,7 @@ import { sampleExpenses } from '@/lib/sample-data'
 import { ExpenseService } from '@/lib/supabase/expenses'
 import { Pagination } from '@/components/ui/Pagination'
 import { usePagination } from '@/hooks/usePagination'
+import { useUrlParams } from '@/hooks/useUrlParams'
 
 // サンプルサイドバーアイテム
 const sidebarItems: SidebarItem[] = [
@@ -48,7 +49,7 @@ type ViewMode = 'card' | 'list' | 'table'
 
 const expenseService = ExpenseService.getInstance()
 
-export default function ExpensesPage() {
+function ExpensesPageContent() {
   const router = useRouter()
   const { user } = useAuth()
   const { toasts, removeToast, success, error: showError } = useToast()
@@ -58,29 +59,26 @@ export default function ExpensesPage() {
   const [error, setError] = useState<string>('')
   const [viewMode, setViewMode] = useState<ViewMode>('card')
 
-  // ページネーション機能のフック
-  const pagination = usePagination({
-    initialPage: 1,
-    initialItemsPerPage: 20,
-    totalItems: totalExpenses
-  })
+  // URLパラメータと状態の同期
+  const urlParams = useUrlParams()
+  
+  // URLパラメータから状態を取得
+  const filters = urlParams.state.filters
+  const sort = urlParams.state.sort
+  const currentPage = urlParams.state.page
+  const itemsPerPage = urlParams.state.itemsPerPage
 
-  // フィルター・ソート機能のフック（サーバーサイドフィルタリング用）
-  const {
-    expenses: clientExpenses,
-    originalCount,
-    filteredCount,
-    statistics,
-    filters,
-    updateFilters,
-    resetFilters,
-    hasActiveFilters,
-    sort,
-    updateSort
-  } = useExpenseFilters([])
+  // フィルターの有効性チェック
+  const hasActiveFilters = !!(
+    filters.dateFrom || filters.dateTo ||
+    (filters.categories && filters.categories.length > 0) ||
+    (filters.paymentMethods && filters.paymentMethods.length > 0) ||
+    filters.amountMin || filters.amountMax ||
+    filters.searchText
+  )
 
   // 支出データを取得（フィルター・ソート・ページネーション対応）
-  const fetchExpenses = async () => {
+  const fetchExpenses = useCallback(async () => {
     try {
       setLoading(true)
       setError('')
@@ -88,8 +86,8 @@ export default function ExpensesPage() {
       console.log('Fetching expenses from database...')
       // フィルター・ソート・ページネーション対応のデータ取得
       const result = await getExpenseGroupsWithFilters(
-        pagination.currentPage,
-        pagination.itemsPerPage,
+        currentPage,
+        itemsPerPage,
         filters,
         sort
       )
@@ -130,32 +128,14 @@ export default function ExpensesPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [currentPage, itemsPerPage, filters, sort])
 
   useEffect(() => {
     console.log('ExpensesPage: user state changed:', { user, hasUser: !!user })
     if (user) {
       fetchExpenses()
     }
-  }, [user])
-
-  // ページネーション、フィルター、ソート変更時にデータを再取得
-  useEffect(() => {
-    if (user) {
-      // ページ変更以外の場合は1ページ目に戻す
-      if (pagination.currentPage !== 1) {
-        pagination.setPage(1)
-      } else {
-        fetchExpenses()
-      }
-    }
-  }, [filters, sort, pagination.itemsPerPage, user])
-
-  useEffect(() => {
-    if (user) {
-      fetchExpenses()
-    }
-  }, [pagination.currentPage, user])
+  }, [user, fetchExpenses])
 
   // ページに戻ってきた時にもデータを再取得
   useEffect(() => {
@@ -205,9 +185,9 @@ export default function ExpensesPage() {
           {/* フィルター・ソート機能 */}
           <ExpenseFilters
             filters={filters}
-            onFiltersChange={updateFilters}
+            onFiltersChange={urlParams.updateFilters}
             sort={sort}
-            onSortChange={updateSort}
+            onSortChange={urlParams.updateSort}
             totalCount={totalExpenses}
             filteredCount={rawExpenses.length}
             viewMode={viewMode}
@@ -316,7 +296,7 @@ export default function ExpensesPage() {
                       最初の支出を登録
                     </Button>
                   ) : (
-                    <Button variant="secondary" onClick={resetFilters}>
+                    <Button variant="secondary" onClick={urlParams.resetAll}>
                       <Icon name="x" category="ui" size="sm" className="mr-2" />
                       フィルターをクリア
                     </Button>
@@ -328,7 +308,7 @@ export default function ExpensesPage() {
                     expenses={rawExpenses} 
                     viewMode={viewMode}
                     sort={sort}
-                    onSortChange={updateSort}
+                    onSortChange={urlParams.updateSort}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                   />
@@ -337,12 +317,12 @@ export default function ExpensesPage() {
                   {totalExpenses > 0 && (
                     <div className="mt-6 pt-4 border-t border-primary-200">
                       <Pagination
-                        currentPage={pagination.currentPage}
-                        totalPages={pagination.totalPages}
+                        currentPage={currentPage}
+                        totalPages={Math.ceil(totalExpenses / itemsPerPage)}
                         totalItems={totalExpenses}
-                        itemsPerPage={pagination.itemsPerPage}
-                        onPageChange={pagination.setPage}
-                        onItemsPerPageChange={pagination.setItemsPerPage}
+                        itemsPerPage={itemsPerPage}
+                        onPageChange={urlParams.updatePage}
+                        onItemsPerPageChange={urlParams.updateItemsPerPage}
                       />
                     </div>
                   )}
@@ -355,5 +335,17 @@ export default function ExpensesPage() {
       
       <ToastContainer toasts={toasts} onRemove={removeToast} />
     </AuthGuard>
+  )
+}
+
+export default function ExpensesPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-primary-50 flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-2 border-primary-300 border-t-primary-900 rounded-full"></div>
+      </div>
+    }>
+      <ExpensesPageContent />
+    </Suspense>
   )
 }

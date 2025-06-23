@@ -31,17 +31,35 @@ export function Icon({
   const iconPath = `/icons/${category}/${name}.svg`
   
   useEffect(() => {
+    let isMounted = true
+    
     const loadSvg = async () => {
       try {
         const response = await fetch(iconPath)
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`)
+        }
         const text = await response.text()
-        setSvgContent(text)
+        
+        if (isMounted) {
+          setSvgContent(text)
+        }
       } catch (error) {
-        console.error(`Failed to load icon: ${iconPath}`, error)
+        if (isMounted) {
+          console.error(`Failed to load icon: ${iconPath}`, error)
+          // フォールバック: 基本的な四角形アイコン
+          setSvgContent(`<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="2" width="12" height="12" stroke="currentColor" stroke-width="1" fill="none"/>
+          </svg>`)
+        }
       }
     }
     
     loadSvg()
+    
+    return () => {
+      isMounted = false
+    }
   }, [iconPath])
 
   if (!svgContent) {
