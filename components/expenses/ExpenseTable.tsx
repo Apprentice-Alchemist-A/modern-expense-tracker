@@ -2,6 +2,8 @@
 
 import { Icon } from '@/components/ui/Icon'
 import { Button } from '@/components/ui/Button'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import { useDeleteConfirm } from '@/hooks/useDeleteConfirm'
 import { cn } from '@/lib/utils/cn'
 import { SortField, SortDirection, SortState } from './ExpenseFilters'
 
@@ -38,6 +40,20 @@ interface ExpenseTableProps {
 }
 
 export function ExpenseTable({ expenses, sort, onSortChange, onEdit, onDelete, onView }: ExpenseTableProps) {
+  const {
+    showConfirm,
+    isDeleting,
+    requestDelete,
+    handleConfirm,
+    handleCancel,
+    confirmMessage
+  } = useDeleteConfirm({
+    onDelete: onDelete || (() => {}),
+    getItemName: (id) => {
+      const expense = expenses.find(e => e.id === id)
+      return expense?.title || '支出'
+    }
+  })
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return date.toLocaleDateString('ja-JP', {
@@ -196,9 +212,10 @@ export function ExpenseTable({ expenses, sort, onSortChange, onEdit, onDelete, o
                       <Button 
                         variant="ghost" 
                         size="xs"
-                        onClick={() => onDelete(expense.id)}
+                        onClick={() => requestDelete(expense.id)}
                         title="削除"
                         className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        disabled={isDeleting}
                       >
                         <Icon name="trash" category="ui" size="xs" />
                       </Button>
@@ -210,6 +227,18 @@ export function ExpenseTable({ expenses, sort, onSortChange, onEdit, onDelete, o
           ))}
         </tbody>
       </table>
+      
+      <ConfirmDialog
+        isOpen={showConfirm}
+        onClose={handleCancel}
+        onConfirm={handleConfirm}
+        title="支出を削除"
+        message={confirmMessage}
+        confirmText="削除"
+        cancelText="キャンセル"
+        variant="danger"
+        isLoading={isDeleting}
+      />
     </div>
   )
 }

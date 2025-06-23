@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Icon } from '@/components/ui/Icon'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import { useDeleteConfirm } from '@/hooks/useDeleteConfirm'
 import { cn } from '@/lib/utils/cn'
 
 interface ExpenseCardProps {
@@ -38,8 +38,17 @@ interface ExpenseCardProps {
 }
 
 export function ExpenseCard({ expense, className, onEdit, onDelete }: ExpenseCardProps) {
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
+  const {
+    showConfirm,
+    isDeleting,
+    requestDelete,
+    handleConfirm,
+    handleCancel,
+    confirmMessage
+  } = useDeleteConfirm({
+    onDelete: onDelete || (() => {}),
+    getItemName: () => expense.title
+  })
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -55,18 +64,6 @@ export function ExpenseCard({ expense, className, onEdit, onDelete }: ExpenseCar
       style: 'currency',
       currency: 'JPY'
     }).format(amount)
-  }
-
-  const handleDeleteConfirm = async () => {
-    if (!onDelete) return
-    
-    setIsDeleting(true)
-    try {
-      await onDelete(expense.id)
-    } finally {
-      setIsDeleting(false)
-      setShowDeleteConfirm(false)
-    }
   }
 
   return (
@@ -134,7 +131,7 @@ export function ExpenseCard({ expense, className, onEdit, onDelete }: ExpenseCar
               className="flex-1 text-red-600 hover:text-red-700 hover:bg-red-50"
               onClick={(e) => {
                 e.stopPropagation()
-                setShowDeleteConfirm(true)
+                requestDelete(expense.id)
               }}
               disabled={isDeleting}
             >
@@ -146,11 +143,11 @@ export function ExpenseCard({ expense, className, onEdit, onDelete }: ExpenseCar
       </CardContent>
       
       <ConfirmDialog
-        isOpen={showDeleteConfirm}
-        onClose={() => setShowDeleteConfirm(false)}
-        onConfirm={handleDeleteConfirm}
+        isOpen={showConfirm}
+        onClose={handleCancel}
+        onConfirm={handleConfirm}
         title="支出を削除"
-        message={`「${expense.title}」を削除しますか？この操作は取り消せません。`}
+        message={confirmMessage}
         confirmText="削除"
         cancelText="キャンセル"
         variant="danger"
