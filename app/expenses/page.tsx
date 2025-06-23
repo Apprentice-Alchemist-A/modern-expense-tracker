@@ -10,7 +10,7 @@ import { Icon } from '@/components/ui/Icon'
 import { ToastContainer } from '@/components/ui/ToastContainer'
 import { useAuth } from '@/components/auth/AuthProvider'
 import { AuthGuard } from '@/components/auth/AuthGuard'
-import { getExpenseGroups } from '@/lib/supabase/queries'
+import { getExpenseGroups, getExpenseGroupsWithFilters } from '@/lib/supabase/queries'
 import { SidebarItem } from '@/components/layout/Sidebar'
 import { ExpenseViews } from '@/components/expenses/ExpenseViews'
 import { ExpenseFilters } from '@/components/expenses/ExpenseFilters'
@@ -18,6 +18,8 @@ import { useExpenseFilters } from '@/hooks/useExpenseFilters'
 import { useToast } from '@/hooks/useToast'
 import { sampleExpenses } from '@/lib/sample-data'
 import { ExpenseService } from '@/lib/supabase/expenses'
+import { Pagination } from '@/components/ui/Pagination'
+import { usePagination } from '@/hooks/usePagination'
 
 // サンプルサイドバーアイテム
 const sidebarItems: SidebarItem[] = [
@@ -51,13 +53,21 @@ export default function ExpensesPage() {
   const { user } = useAuth()
   const { toasts, removeToast, success, error: showError } = useToast()
   const [rawExpenses, setRawExpenses] = useState<any[]>([])
+  const [totalExpenses, setTotalExpenses] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>('')
   const [viewMode, setViewMode] = useState<ViewMode>('card')
 
-  // フィルター・ソート機能のフック
+  // ページネーション機能のフック
+  const pagination = usePagination({
+    initialPage: 1,
+    initialItemsPerPage: 20,
+    totalItems: totalExpenses
+  })
+
+  // フィルター・ソート機能のフック（サーバーサイドフィルタリング用）
   const {
-    expenses: filteredExpenses,
+    expenses: clientExpenses,
     originalCount,
     filteredCount,
     statistics,
@@ -67,21 +77,26 @@ export default function ExpensesPage() {
     hasActiveFilters,
     sort,
     updateSort
-  } = useExpenseFilters(rawExpenses)
+  } = useExpenseFilters([])
 
-  // 支出データを取得
+  // 支出データを取得（フィルター・ソート・ページネーション対応）
   const fetchExpenses = async () => {
     try {
       setLoading(true)
       setError('')
       
       console.log('Fetching expenses from database...')
-      // 実際のデータベースからデータを取得
-      const data = await getExpenseGroups(50) // 最新50件を取得
-      console.log('Fetched expenses from DB:', data?.length, 'items')
+      // フィルター・ソート・ページネーション対応のデータ取得
+      const result = await getExpenseGroupsWithFilters(
+        pagination.currentPage,
+        pagination.itemsPerPage,
+        filters,
+        sort
+      )
+      console.log('Fetched expenses from DB:', result.data?.length, 'items, total:', result.totalCount)
       
       // データを画面表示用の形式に変換
-      const formattedExpenses = data?.map(expense => ({
+      const formattedExpenses = result.data?.map(expense => ({
         id: expense.id,
         title: expense.title,
         category: {
@@ -107,7 +122,8 @@ export default function ExpensesPage() {
       })) || []
       
       setRawExpenses(formattedExpenses)
-      console.log(`支出データを取得しました: ${formattedExpenses.length}件`)
+      setTotalExpenses(result.totalCount)
+      console.log(`支出データを取得しました: ${formattedExpenses.length}件 / 総計: ${result.totalCount}件`)
     } catch (err: any) {
       console.error('Failed to fetch expenses:', err)
       setError(err.message || '支出データの取得に失敗しました')
@@ -122,6 +138,24 @@ export default function ExpensesPage() {
       fetchExpenses()
     }
   }, [user])
+
+  // ページネーション、フィルター、ソート変更時にデータを再取得
+  useEffect(() => {
+    if (user) {
+      // ページ変更以外の場合は1ページ目に戻す
+      if (pagination.currentPage !== 1) {
+        pagination.setPage(1)
+      } else {
+        fetchExpenses()
+      }
+    }
+  }, [filters, sort, pagination.itemsPerPage, user])
+
+  useEffect(() => {
+    if (user) {
+      fetchExpenses()
+    }
+  }, [pagination.currentPage, user])
 
   // ページに戻ってきた時にもデータを再取得
   useEffect(() => {
@@ -174,8 +208,8 @@ export default function ExpensesPage() {
             onFiltersChange={updateFilters}
             sort={sort}
             onSortChange={updateSort}
-            totalCount={originalCount}
-            filteredCount={filteredCount}
+            totalCount={totalExpenses}
+            filteredCount={rawExpenses.length}
             viewMode={viewMode}
           />
 
@@ -212,8 +246,7 @@ export default function ExpensesPage() {
               {/* 統計情報表示 */}
               {hasActiveFilters && (
                 <div className="flex items-center space-x-4 text-sm text-primary-600 bg-primary-50 px-3 py-2 rounded-md">
-                  <span>合計: ¥{statistics.total.toLocaleString()}</span>
-                  <span>平均: ¥{Math.round(statistics.average).toLocaleString()}</span>
+                  <span>フィルター適用中</span>
                 </div>
               )}
               
@@ -232,14 +265,13 @@ export default function ExpensesPage() {
           <Card>
             <CardHeader>
               <CardTitle>
-                支出データ ({filteredCount}件
-                {hasActiveFilters && ` / ${originalCount}件中`})
+                支出データ ({rawExpenses.length}件 / 総計: {totalExpenses}件)
               </CardTitle>
               <CardDescription>
                 {viewMode === 'card' && 'カード表示で支出データを確認'}
                 {viewMode === 'list' && 'リスト表示で支出データを確認'}
                 {viewMode === 'table' && 'テーブル表示で支出データを確認'}
-                {hasActiveFilters && ` - フィルター適用中`}
+                {hasActiveFilters && ` (フィルター適用中)`}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -256,14 +288,14 @@ export default function ExpensesPage() {
                     再試行
                   </Button>
                 </div>
-              ) : filteredExpenses.length === 0 ? (
+              ) : rawExpenses.length === 0 ? (
                 <div className="text-center py-12">
                   <Icon name="search" category="ui" size="lg" variant="default" className="mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-primary-900 mb-2">
-                    {originalCount === 0 ? '支出データがありません' : '該当するデータがありません'}
+                    {totalExpenses === 0 ? '支出データがありません' : '該当するデータがありません'}
                   </h3>
                   <p className="text-primary-600 mb-6">
-                    {originalCount === 0 ? (
+                    {totalExpenses === 0 ? (
                       <>
                         まだ支出データが登録されていません。<br />
                         「新規追加」ボタンから最初の支出を登録してみましょう。
@@ -275,7 +307,7 @@ export default function ExpensesPage() {
                       </>
                     )}
                   </p>
-                  {originalCount === 0 ? (
+                  {totalExpenses === 0 ? (
                     <Button 
                       variant="primary"
                       onClick={() => router.push('/expenses/new')}
@@ -291,14 +323,30 @@ export default function ExpensesPage() {
                   )}
                 </div>
               ) : (
-                <ExpenseViews 
-                  expenses={filteredExpenses} 
-                  viewMode={viewMode}
-                  sort={sort}
-                  onSortChange={updateSort}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                />
+                <>
+                  <ExpenseViews 
+                    expenses={rawExpenses} 
+                    viewMode={viewMode}
+                    sort={sort}
+                    onSortChange={updateSort}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                  />
+                  
+                  {/* ページネーション */}
+                  {totalExpenses > 0 && (
+                    <div className="mt-6 pt-4 border-t border-primary-200">
+                      <Pagination
+                        currentPage={pagination.currentPage}
+                        totalPages={pagination.totalPages}
+                        totalItems={totalExpenses}
+                        itemsPerPage={pagination.itemsPerPage}
+                        onPageChange={pagination.setPage}
+                        onItemsPerPageChange={pagination.setItemsPerPage}
+                      />
+                    </div>
+                  )}
+                </>
               )}
             </CardContent>
           </Card>
