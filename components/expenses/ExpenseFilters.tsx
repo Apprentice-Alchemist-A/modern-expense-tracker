@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Icon } from '@/components/ui/Icon'
 import { DateRangePicker, DateRange } from '@/components/ui/DateRangePicker'
+import { useMasterDataFilters } from '@/hooks/useMasterDataFilters'
 import { cn } from '@/lib/utils/cn'
 
 export interface FilterState {
@@ -36,23 +37,7 @@ interface ExpenseFiltersProps {
   className?: string
 }
 
-const CATEGORY_OPTIONS = [
-  { value: '食事・飲み物', label: '食事・飲み物', icon: 'food' },
-  { value: '交通費', label: '交通費', icon: 'transport' },
-  { value: '教育・学習', label: '教育・学習', icon: 'education' },
-  { value: '医療・健康', label: '医療・健康', icon: 'medical' },
-  { value: '娯楽・趣味', label: '娯楽・趣味', icon: 'entertainment' },
-  { value: '日用品', label: '日用品', icon: 'daily-goods' },
-]
-
-const PAYMENT_METHOD_OPTIONS = [
-  { value: '現金', label: '現金', icon: 'cash' },
-  { value: 'クレジットカード', label: 'クレジットカード', icon: 'credit-card' },
-  { value: 'デビットカード', label: 'デビットカード', icon: 'debit-card' },
-  { value: 'ICカード', label: 'ICカード', icon: 'IC' },
-  { value: 'PayPay', label: 'PayPay', icon: 'paypay' },
-  { value: '楽天Pay', label: '楽天Pay', icon: 'rakuten-pay' },
-]
+// 静的データは削除し、動的データを使用
 
 const SORT_OPTIONS = [
   { field: 'date' as SortField, label: '日付' },
@@ -73,6 +58,7 @@ export function ExpenseFilters({
   viewMode = 'card',
   className
 }: ExpenseFiltersProps) {
+  const { categories, paymentMethods, loading: masterDataLoading, error: masterDataError } = useMasterDataFilters()
   const [isExpanded, setIsExpanded] = useState(false)
 
   const updateFilter = (key: keyof FilterState, value: any) => {
@@ -255,20 +241,26 @@ export function ExpenseFilters({
             <label className="block text-sm font-medium text-primary-700 mb-2">
               カテゴリ
             </label>
-            <div className="flex flex-wrap gap-2">
-              {CATEGORY_OPTIONS.map((category) => (
-                <Button
-                  key={category.value}
-                  variant={filters.categories.includes(category.value) ? 'primary' : 'secondary'}
-                  size="sm"
-                  onClick={() => toggleCategory(category.value)}
-                  className="flex items-center"
-                >
-                  <Icon name={category.icon} category="categories" size="sm" className="mr-2" />
-                  {category.label}
-                </Button>
-              ))}
-            </div>
+            {masterDataLoading ? (
+              <div className="text-sm text-primary-500">読み込み中...</div>
+            ) : masterDataError ? (
+              <div className="text-sm text-red-500">データ取得エラー: {masterDataError}</div>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {categories.map((category) => (
+                  <Button
+                    key={category.value}
+                    variant={filters.categories.includes(category.value) ? 'primary' : 'secondary'}
+                    size="sm"
+                    onClick={() => toggleCategory(category.value)}
+                    className="flex items-center"
+                  >
+                    <Icon name={category.icon} category="categories" size="sm" className="mr-2" />
+                    {category.label}
+                  </Button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* 支払方法フィルター */}
@@ -276,20 +268,26 @@ export function ExpenseFilters({
             <label className="block text-sm font-medium text-primary-700 mb-2">
               支払方法
             </label>
-            <div className="flex flex-wrap gap-2">
-              {PAYMENT_METHOD_OPTIONS.map((method) => (
-                <Button
-                  key={method.value}
-                  variant={filters.paymentMethods.includes(method.value) ? 'primary' : 'secondary'}
-                  size="sm"
-                  onClick={() => togglePaymentMethod(method.value)}
-                  className="flex items-center"
-                >
-                  <Icon name={method.icon} category="payments" size="sm" className="mr-2" />
-                  {method.label}
-                </Button>
-              ))}
-            </div>
+            {masterDataLoading ? (
+              <div className="text-sm text-primary-500">読み込み中...</div>
+            ) : masterDataError ? (
+              <div className="text-sm text-red-500">データ取得エラー: {masterDataError}</div>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {paymentMethods.map((method) => (
+                  <Button
+                    key={method.value}
+                    variant={filters.paymentMethods.includes(method.value) ? 'primary' : 'secondary'}
+                    size="sm"
+                    onClick={() => togglePaymentMethod(method.value)}
+                    className="flex items-center"
+                  >
+                    <Icon name={method.icon} category="payments" size="sm" className="mr-2" />
+                    {method.label}
+                  </Button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { Database } from '@/types/supabase'
+import { getSupabaseClient } from '@/lib/supabase/browser-client'
 
 export interface Category {
   id: string
@@ -25,13 +24,13 @@ export function useMasterData() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const supabase = createClientComponentClient<Database>()
-
   useEffect(() => {
     const fetchMasterData = async () => {
       try {
         setLoading(true)
         setError(null)
+
+        const supabase = getSupabaseClient()
 
         // カテゴリを取得
         const { data: categoriesData, error: categoriesError } = await supabase
@@ -66,7 +65,7 @@ export function useMasterData() {
     }
 
     fetchMasterData()
-  }, [supabase])
+  }, [])
 
   return {
     categories,
