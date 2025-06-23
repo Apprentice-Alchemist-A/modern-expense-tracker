@@ -4,7 +4,7 @@ import { z } from 'zod'
 export const expenseItemSchema = z.object({
   item_name: z.string().min(1, '項目名を入力してください'),
   amount: z.number().min(0.01, '金額は0円より大きい値を入力してください'),
-  note: z.string().optional()
+  note: z.string().nullable().optional()
 })
 
 // 支出グループのスキーマ
@@ -13,7 +13,7 @@ export const expenseGroupSchema = z.object({
   category_id: z.string().min(1, 'カテゴリを選択してください'),
   payment_method_id: z.string().min(1, '支払方法を選択してください'),
   date: z.string().min(1, '日付を選択してください'),
-  memo: z.string().optional(),
+  memo: z.string().nullable().optional(),
   items: z.array(expenseItemSchema).min(1, '少なくとも1つの項目を入力してください')
 })
 
@@ -25,7 +25,7 @@ export type ExpenseGroup = z.infer<typeof expenseGroupSchema>
 export const defaultExpenseItem: ExpenseItem = {
   item_name: '',
   amount: 0,
-  note: ''
+  note: null
 }
 
 export const defaultExpenseGroup: ExpenseGroup = {
@@ -33,7 +33,7 @@ export const defaultExpenseGroup: ExpenseGroup = {
   category_id: '',
   payment_method_id: '',
   date: '', // 空にして、コンポーネント側で現在日付を設定
-  memo: '',
+  memo: null,
   items: [defaultExpenseItem]
 }
 

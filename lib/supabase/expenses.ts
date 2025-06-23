@@ -99,8 +99,8 @@ export class ExpenseService {
           title: data.title,
           category_id: data.category_id,
           payment_method_id: data.payment_method_id,
-          date: data.date,
-          memo: data.memo,
+          expense_date: data.date,
+          notes: data.memo,
           updated_at: new Date().toISOString()
         })
         .eq('id', groupId)
@@ -114,7 +114,7 @@ export class ExpenseService {
       const { error: deleteError } = await this.supabase
         .from('expense_items')
         .delete()
-        .eq('group_id', groupId)
+        .eq('expense_group_id', groupId)
 
       if (deleteError) {
         throw deleteError
@@ -122,10 +122,13 @@ export class ExpenseService {
 
       // 3. 新しい項目を追加
       const itemsToInsert = data.items.map(item => ({
-        group_id: groupId,
-        item_name: item.item_name,
+        expense_group_id: groupId,
+        name: item.item_name,
         amount: item.amount,
-        note: item.note || null
+        notes: item.note || null,
+        quantity: 1,
+        unit_price: item.amount,
+        display_order: 0
       }))
 
       const { error: insertError } = await this.supabase
@@ -210,8 +213,8 @@ export class ExpenseService {
       const { data: items, error: itemsError } = await this.supabase
         .from('expense_items')
         .select('*')
-        .eq('group_id', groupId)
-        .order('created_at')
+        .eq('expense_group_id', groupId)
+        .order('created_at', { ascending: true })
 
       if (itemsError) {
         throw itemsError
@@ -221,12 +224,12 @@ export class ExpenseService {
         title: group.title,
         category_id: group.category_id,
         payment_method_id: group.payment_method_id,
-        date: group.date,
-        memo: group.memo,
+        date: group.expense_date,
+        memo: group.notes,
         items: items.map(item => ({
-          item_name: item.item_name,
+          item_name: item.name,
           amount: item.amount,
-          note: item.note
+          note: item.notes
         }))
       }
     } catch (err) {

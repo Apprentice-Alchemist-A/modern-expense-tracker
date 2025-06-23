@@ -306,7 +306,7 @@ export function ExpenseForm({
                   <Input
                     placeholder="メモ（任意）"
                     value={item.note || ''}
-                    onChange={(e) => updateItem(index, 'note', e.target.value)}
+                    onChange={(e) => updateItem(index, 'note', e.target.value || null)}
                     disabled={loading}
                     size="sm"
                   />
@@ -338,7 +338,7 @@ export function ExpenseForm({
           </label>
           <textarea
             value={formData.memo || ''}
-            onChange={(e) => updateField('memo', e.target.value)}
+            onChange={(e) => updateField('memo', e.target.value || null)}
             placeholder="追加のメモ..."
             className="w-full px-3 py-2 border border-primary-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             rows={3}
