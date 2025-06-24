@@ -46,71 +46,141 @@ const sidebarItems: SidebarItem[] = [
 
 // デモ用ダッシュボードデータ
 const demoData = {
-  summary: {
-    currentMonth: {
-      total: 89750,
-      count: 28,
-      average: 3205
-    },
-    previousMonth: {
-      total: 76230,
-      count: 25,
-      average: 3049
-    }
+  // MonthlySummary用データ
+  monthlySummary: {
+    total: 89750,
+    change: 17.7 // (89750 - 76230) / 76230 * 100
   },
+  // CategoryPieChart用データ
   categoryData: [
-    { name: '食費', value: 35600, color: '#10b981' },
-    { name: '交通費', value: 18900, color: '#3b82f6' },
-    { name: '娯楽', value: 15200, color: '#f59e0b' },
-    { name: '日用品', value: 12450, color: '#ef4444' },
-    { name: 'その他', value: 7600, color: '#8b5cf6' }
+    {
+      categoryId: '1',
+      categoryName: '食費',
+      categoryIcon: 'food',
+      categoryColor: '#10b981',
+      amount: 35600,
+      percentage: 39.7
+    },
+    {
+      categoryId: '2',
+      categoryName: '交通費',
+      categoryIcon: 'transport',
+      categoryColor: '#3b82f6',
+      amount: 18900,
+      percentage: 21.1
+    },
+    {
+      categoryId: '3',
+      categoryName: '娯楽',
+      categoryIcon: 'entertainment',
+      categoryColor: '#f59e0b',
+      amount: 15200,
+      percentage: 16.9
+    },
+    {
+      categoryId: '4',
+      categoryName: '日用品',
+      categoryIcon: 'shopping',
+      categoryColor: '#ef4444',
+      amount: 12450,
+      percentage: 13.9
+    },
+    {
+      categoryId: '5',
+      categoryName: 'その他',
+      categoryIcon: 'other',
+      categoryColor: '#8b5cf6',
+      amount: 7600,
+      percentage: 8.5
+    }
   ],
+  // RecentExpenses用データ
   recentExpenses: [
     {
       id: '1',
       title: 'ランチ - イタリアンレストラン',
       amount: 1200,
       date: '2025-01-28',
-      category: '食費',
-      payment_method: 'クレジットカード'
+      categoryName: '食費',
+      categoryIcon: 'food',
+      categoryColor: '#10b981',
+      paymentMethodName: 'クレジットカード',
+      paymentMethodIcon: 'credit-card'
     },
     {
       id: '2', 
       title: 'コンビニ - 朝食',
       amount: 350,
       date: '2025-01-28',
-      category: '食費',
-      payment_method: '現金'
+      categoryName: '食費',
+      categoryIcon: 'food',
+      categoryColor: '#10b981',
+      paymentMethodName: '現金',
+      paymentMethodIcon: 'cash'
     },
     {
       id: '3',
       title: '電車代',
       amount: 480,
       date: '2025-01-27',
-      category: '交通費',
-      payment_method: 'ICカード'
+      categoryName: '交通費',
+      categoryIcon: 'transport',
+      categoryColor: '#3b82f6',
+      paymentMethodName: 'ICカード',
+      paymentMethodIcon: 'ic-card'
     },
     {
       id: '4',
       title: '映画鑑賞',
       amount: 1800,
       date: '2025-01-26',
-      category: '娯楽',
-      payment_method: 'クレジットカード'
+      categoryName: '娯楽',
+      categoryIcon: 'entertainment',
+      categoryColor: '#f59e0b',
+      paymentMethodName: 'クレジットカード',
+      paymentMethodIcon: 'credit-card'
     },
     {
       id: '5',
       title: 'スーパー - 日用品',
       amount: 2100,
       date: '2025-01-25',
-      category: '日用品',
-      payment_method: 'クレジットカード'
+      categoryName: '日用品',
+      categoryIcon: 'shopping',
+      categoryColor: '#ef4444',
+      paymentMethodName: 'クレジットカード',
+      paymentMethodIcon: 'credit-card'
     }
   ],
+  // ExpenseTrendChart用データ
   trendData: [
     { month: '11月', amount: 67800 },
     { month: '12月', amount: 76230 },
     { month: '1月', amount: 89750 }
+  ],
+  // TopCategories用データ
+  topCategories: [
+    {
+      categoryName: '食費',
+      categoryIcon: 'food',
+      categoryColor: '#10b981',
+      amount: 35600,
+      count: 15
+    },
+    {
+      categoryName: '交通費',
+      categoryIcon: 'transport',
+      categoryColor: '#3b82f6',
+      amount: 18900,
+      count: 8
+    },
+    {
+      categoryName: '娯楽',
+      categoryIcon: 'entertainment',
+      categoryColor: '#f59e0b',
+      amount: 15200,
+      count: 6
+    }
   ]
 }
 
@@ -151,7 +221,7 @@ export default function DemoDashboardPage() {
         <div className="space-y-6">
           <PageHeader 
             title="ダッシュボード"
-            description="支出の概要と分析"
+            subtitle="支出の概要と分析"
           />
 
           {/* クイックアクション */}
@@ -185,15 +255,18 @@ export default function DemoDashboardPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* 左カラム - サマリーとグラフ */}
             <div className="lg:col-span-2 space-y-6">
-              <MonthlySummary data={demoData.summary} />
-              <ExpenseTrendChart data={demoData.trendData} />
+              <MonthlySummary 
+                total={demoData.monthlySummary.total} 
+                change={demoData.monthlySummary.change} 
+              />
+              <ExpenseTrendChart initialData={demoData.trendData} />
               <CategoryPieChart data={demoData.categoryData} />
             </div>
 
             {/* 右カラム - 最近の支出と分析 */}
             <div className="space-y-6">
-              <RecentExpenses data={demoData.recentExpenses} />
-              <TopCategories data={demoData.categoryData} />
+              <RecentExpenses expenses={demoData.recentExpenses} />
+              <TopCategories categories={demoData.topCategories} />
               
               {/* デモ機能案内 */}
               <Card>

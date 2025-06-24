@@ -237,7 +237,7 @@ export default function DemoExpensesPage() {
           <div className="flex items-center justify-between">
             <PageHeader 
               title="支出一覧 (デモ)"
-              description={`${filteredData.length}件の支出データ`}
+              subtitle={`${filteredData.length}件の支出データ`}
             />
               <div className="flex items-center gap-4">
               <Button variant="outline" onClick={() => setViewType(viewType === 'card' ? 'table' : 'card')}>
@@ -262,11 +262,11 @@ export default function DemoExpensesPage() {
                   placeholder="検索..."
                   value={searchText}
                   onChange={(e) => handleSearch(e.target.value)}
-                  icon={<Icon name="analytics" category="navigation" size="sm" />}
+                  prefix={<Icon name="analytics" category="navigation" size="sm" />}
                 />
                 <Select
                   value={selectedCategory}
-                  onChange={(e) => handleCategoryFilter(e.target.value)}
+                  onChange={(value) => handleCategoryFilter(value)}
                   options={[
                     { value: '', label: 'カテゴリ全て' },
                     ...demoCategories.map(cat => ({ value: cat.name, label: cat.name }))
@@ -274,7 +274,7 @@ export default function DemoExpensesPage() {
                 />
                 <Select
                   value={selectedPayment}
-                  onChange={(e) => handlePaymentFilter(e.target.value)}
+                  onChange={(value) => handlePaymentFilter(value)}
                   options={[
                     { value: '', label: '支払方法全て' },
                     ...demoPaymentMethods.map(pm => ({ value: pm.name, label: pm.name }))
