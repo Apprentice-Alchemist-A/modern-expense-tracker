@@ -73,7 +73,7 @@ export const getExpenseGroupsWithFilters = async (
   page: number = 1,
   itemsPerPage: number = 20,
   filters?: ExpenseFilters,
-  sort?: ExpenseSort
+  sort?: ExpenseSort | undefined
 ) => {
   const supabase = getSupabaseClient()
   

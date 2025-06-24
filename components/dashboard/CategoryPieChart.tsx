@@ -119,7 +119,7 @@ export function CategoryPieChart({ data, isLoading, className }: CategoryPieChar
   }
   
   return (
-    <Card className={cn("hover:shadow-md transition-shadow", className)}>
+    <Card className={cn("card-interactive", className)}>
       <CardHeader>
         <CardTitle>カテゴリ別支出</CardTitle>
       </CardHeader>

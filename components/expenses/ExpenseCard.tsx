@@ -67,7 +67,7 @@ export function ExpenseCard({ expense, className, onEdit, onDelete }: ExpenseCar
   }
 
   return (
-    <Card className={cn("hover:shadow-md transition-shadow cursor-pointer", className)}>
+    <Card className={cn("card-interactive", className)}>
       <CardContent className="p-4">
         <div className="flex items-start justify-between mb-3">
           <div className="flex-1">
@@ -128,7 +128,7 @@ export function ExpenseCard({ expense, className, onEdit, onDelete }: ExpenseCar
             <Button 
               variant="ghost" 
               size="sm" 
-              className="flex-1 text-red-600 hover:text-red-700 hover:bg-red-50"
+              className="flex-1 text-error-600 hover:text-error-700 hover:bg-error-50"
               onClick={(e) => {
                 e.stopPropagation()
                 requestDelete(expense.id)

@@ -197,7 +197,7 @@ export function ExpenseForm({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* タイトル */}
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-primary-700 mb-2">
+            <label className="form-label">
               タイトル *
             </label>
             <Input
@@ -211,7 +211,7 @@ export function ExpenseForm({
 
           {/* 日付 */}
           <div>
-            <label className="block text-sm font-medium text-primary-700 mb-2">
+            <label className="form-label">
               日付 *
             </label>
             <Input
@@ -225,7 +225,7 @@ export function ExpenseForm({
 
           {/* カテゴリ */}
           <div>
-            <label className="block text-sm font-medium text-primary-700 mb-2">
+            <label className="form-label">
               カテゴリ *
             </label>
             <Select
@@ -237,13 +237,13 @@ export function ExpenseForm({
               error={!!errors.category_id}
             />
             {errors.category_id && (
-              <p className="text-sm text-red-600 mt-1">{errors.category_id}</p>
+              <p className="form-error">{errors.category_id}</p>
             )}
           </div>
 
           {/* 支払方法 */}
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-primary-700 mb-2">
+            <label className="form-label">
               支払方法 *
             </label>
             <Select
@@ -255,7 +255,7 @@ export function ExpenseForm({
               error={!!errors.payment_method_id}
             />
             {errors.payment_method_id && (
-              <p className="text-sm text-red-600 mt-1">{errors.payment_method_id}</p>
+              <p className="form-error">{errors.payment_method_id}</p>
             )}
           </div>
         </div>
@@ -263,7 +263,7 @@ export function ExpenseForm({
         {/* 項目リスト */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <label className="text-sm font-medium text-primary-700">
+            <label className="form-label">
               項目詳細 *
             </label>
             <Button
@@ -318,7 +318,7 @@ export function ExpenseForm({
                     size="sm"
                     onClick={() => removeItem(index)}
                     disabled={loading}
-                    className="text-red-600 hover:text-red-700"
+                    className="text-error-600 hover:text-error-700"
                   >
                     <Icon name="x" category="ui" size="sm" />
                   </Button>
@@ -327,13 +327,13 @@ export function ExpenseForm({
             ))}
           </div>
           {errors.items && (
-            <p className="text-sm text-red-600 mt-1">{errors.items}</p>
+            <p className="form-error">{errors.items}</p>
           )}
         </div>
 
         {/* メモ */}
         <div>
-          <label className="block text-sm font-medium text-primary-700 mb-2">
+          <label className="form-label">
             メモ（任意）
           </label>
           <textarea

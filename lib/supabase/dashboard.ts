@@ -141,11 +141,12 @@ export class DashboardService {
       if (categoryMap.has(categoryId)) {
         categoryMap.get(categoryId).amount += amount
       } else {
+        const categories = Array.isArray(expense.categories) ? expense.categories[0] : expense.categories
         categoryMap.set(categoryId, {
           categoryId,
-          categoryName: expense.categories?.name || 'その他',
-          categoryIcon: expense.categories?.icon || 'help',
-          categoryColor: expense.categories?.color || '#6b7280',
+          categoryName: categories?.name || 'その他',
+          categoryIcon: categories?.icon || 'help',
+          categoryColor: categories?.color || '#6b7280',
           amount
         })
       }
@@ -207,15 +208,18 @@ export class DashboardService {
       return []
     }
     
-    return data.map(expense => ({
-      id: expense.id,
-      title: expense.title,
-      date: expense.expense_date,
-      amount: expense.total_amount || 0,
-      categoryName: expense.categories?.name || 'その他',
-      categoryIcon: expense.categories?.icon || 'help',
-      categoryColor: expense.categories?.color || '#6b7280'
-    }))
+    return data.map(expense => {
+      const categories = Array.isArray(expense.categories) ? expense.categories[0] : expense.categories
+      return ({
+        id: expense.id,
+        title: expense.title,
+        date: expense.expense_date,
+        amount: expense.total_amount || 0,
+        categoryName: categories?.name || 'その他',
+        categoryIcon: categories?.icon || 'help',
+        categoryColor: categories?.color || '#6b7280'
+      })
+    })
   }
   
   /**
@@ -253,10 +257,11 @@ export class DashboardService {
         category.amount += amount
         category.count += 1
       } else {
+        const categories = Array.isArray(expense.categories) ? expense.categories[0] : expense.categories
         categoryMap.set(categoryId, {
-          categoryName: expense.categories?.name || 'その他',
-          categoryIcon: expense.categories?.icon || 'help',
-          categoryColor: expense.categories?.color || '#6b7280',
+          categoryName: categories?.name || 'その他',
+          categoryIcon: categories?.icon || 'help',
+          categoryColor: categories?.color || '#6b7280',
           amount,
           count: 1
         })

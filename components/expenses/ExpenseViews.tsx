@@ -4,6 +4,7 @@ import { ExpenseCard } from './ExpenseCard'
 import { ExpenseList } from './ExpenseList'
 import { ExpenseTable } from './ExpenseTable'
 import { SortState } from './ExpenseFilters'
+import { ExpenseSort } from '@/lib/supabase/queries'
 
 interface Expense {
   id: string
@@ -33,8 +34,8 @@ interface Expense {
 interface ExpenseViewsProps {
   expenses: Expense[]
   viewMode: 'card' | 'list' | 'table'
-  sort?: SortState
-  onSortChange?: (sort: SortState) => void
+  sort?: ExpenseSort | undefined
+  onSortChange?: (sort: ExpenseSort | undefined) => void
   onEdit?: (expenseId: string) => void
   onDelete?: (expenseId: string) => void
 }

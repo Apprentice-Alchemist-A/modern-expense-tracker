@@ -76,7 +76,7 @@ export function TopCategories({ categories, isLoading, className }: TopCategorie
   }
   
   return (
-    <Card className={cn("hover:shadow-md transition-shadow", className)}>
+    <Card className={cn("card-interactive", className)}>
       <CardHeader>
         <CardTitle>よく使うカテゴリ</CardTitle>
       </CardHeader>

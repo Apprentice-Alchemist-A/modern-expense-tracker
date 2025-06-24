@@ -121,7 +121,7 @@ export function ExpenseList({ expense, className, onEdit, onDelete }: ExpenseLis
             <Button 
               variant="ghost" 
               size="xs"
-              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+              className="text-error-600 hover:text-error-700 hover:bg-error-50"
               onClick={(e) => {
                 e.stopPropagation()
                 requestDelete(expense.id)

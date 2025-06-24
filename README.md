@@ -1,66 +1,158 @@
-# 経費・食事管理アプリ リデザイン
+# 経費・食事管理アプリ - リデザイン版
 
-## プロジェクト概要
+Notion風の洗練されたUIを持つ経費管理アプリです。
 
-既存の経費管理アプリのUIを全面的にリデザインし、Notion風の洗練されたインターフェースに変更するプロジェクトです。
+## 🚀 主要機能
 
-## 技術スタック
+- **ダッシュボード**: 支出の概要と分析
+- **支出管理**: 支出の登録・編集・削除
+- **フィルター・検索**: 高度な絞り込み機能
+- **データ可視化**: グラフとチャートによる分析
+- **認証**: Google OAuth認証
+
+## 🛠 技術スタック
 
 - **フレームワーク**: Next.js 14 (App Router)
 - **言語**: TypeScript
 - **認証**: Supabase Auth (Google OAuth)
 - **データベース**: Supabase (PostgreSQL)
 - **スタイリング**: Tailwind CSS
+- **グラフ**: Recharts
 - **デプロイ**: Vercel
 
-## 既存資産（引き継ぎ）
+## 📦 セットアップ
 
-- Supabase設定: `https://otgwixohboxauaefahfe.supabase.co`
-- データベーススキーマ: categories, payment_methods, expense_groups, expense_items
-- Google OAuth認証設定
+### 1. プロジェクトのクローン
 
-## 参照元プロジェクト
+```bash
+git clone <repository-url>
+cd expense-tracker-redesign
+```
 
-`/mnt/e/MyProject/ToDoExtension/` - 既存実装（UIは完全に作り直し）
+### 2. 依存関係のインストール
 
-## ディレクトリ構成
+```bash
+npm install
+```
+
+### 3. 環境変数の設定
+
+`.env.example` を参考に `.env.local` を作成：
+
+```bash
+cp .env.example .env.local
+```
+
+必要な環境変数：
+- `NEXT_PUBLIC_SUPABASE_URL`: SupabaseプロジェクトURL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Supabase匿名キー
+- `NEXT_PUBLIC_APP_URL`: アプリケーションURL
+
+### 4. 開発サーバーの起動
+
+```bash
+npm run dev
+```
+
+http://localhost:3000 でアプリにアクセスできます。
+
+## 🏗 ビルドとデプロイ
+
+### ローカルビルド
+
+```bash
+npm run build
+npm run start
+```
+
+### Vercelデプロイ
+
+1. Vercelアカウントにログイン
+2. プロジェクトをインポート
+3. 環境変数を設定
+4. 自動デプロイ実行
+
+## 📁 プロジェクト構成
 
 ```
 expense-tracker-redesign/
-├── design-docs/           # 設計ドキュメント
-│   ├── wireframes/        # ワイヤーフレーム
-│   ├── component-specs/   # コンポーネント仕様
-│   ├── design-system/     # デザインシステム定義
-│   └── ui-patterns/       # UIパターン集
 ├── app/                   # Next.js App Router
+│   ├── dashboard/         # ダッシュボードページ
+│   ├── expenses/          # 支出管理ページ
+│   └── auth/              # 認証関連
 ├── components/            # Reactコンポーネント
 │   ├── ui/               # 基本UIコンポーネント
 │   ├── layout/           # レイアウトコンポーネント
 │   ├── forms/            # フォームコンポーネント
-│   ├── data-display/     # データ表示コンポーネント
-│   ├── charts/           # チャート・分析コンポーネント
-│   └── templates/        # テンプレート機能
+│   ├── dashboard/        # ダッシュボード用コンポーネント
+│   └── expenses/         # 支出管理用コンポーネント
 ├── lib/                  # ユーティリティ・設定
 │   ├── supabase/         # Supabase関連
 │   ├── utils/            # ユーティリティ関数
 │   └── validations/      # バリデーション
 ├── types/                # TypeScript型定義
-├── hooks/                # カスタムフック
 ├── styles/               # グローバルスタイル
 └── public/               # 静的ファイル
 ```
 
-## 重要な新機能
+## 🎨 デザインシステム
 
-1. **クイック入力モード** - お店テンプレートによる高速入力
-2. **タグ機能** - 自由なタグ付けと検索
-3. **お店データベース** - よく行く店の管理
-4. **テンプレート機能** - 入力パターンの保存
-5. **データ可視化** - 月別推移、カテゴリ別分析
+### カラーパレット
 
-## デザインコンセプト
+- **Primary**: Notion風の落ち着いたグレートーン
+- **Semantic**: Success(緑)、Warning(黄)、Error(赤)、Info(青)
+- **Category**: カテゴリ別の識別色
 
-- **参考**: Notion、Obsidian、VSCode
-- **スタイル**: シンプルで洗練された
-- **アニメーション**: 適度な動きで操作感を演出
-- **全体感**: モダンで落ち着いた雰囲気
+### コンポーネント
+
+- 統一されたボタン、入力フィールド、カード
+- ホバー効果とアニメーション
+- レスポンシブ対応
+
+## 📊 データベース
+
+### テーブル構成
+
+- `categories`: 支出カテゴリ
+- `payment_methods`: 支払方法
+- `expense_groups`: 支出グループ
+- `expense_items`: 支出アイテム
+
+## 🔧 開発コマンド
+
+```bash
+# 開発サーバー起動
+npm run dev
+
+# ビルド
+npm run build
+
+# 型チェック
+npm run type-check
+
+# Vercel用ビルド
+npm run vercel-build
+```
+
+## 🚀 デプロイ
+
+### Vercel設定
+
+1. **環境変数**:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `NEXT_PUBLIC_APP_URL`
+
+2. **ビルド設定**:
+   - Build Command: `npm run vercel-build`
+   - Output Directory: `.next`
+
+3. **セキュリティヘッダー**: 自動設定済み
+
+## 📝 ライセンス
+
+このプロジェクトはプライベートプロジェクトです。
+
+## 🤝 コントリビューション
+
+現在、外部からのコントリビューションは受け付けていません。

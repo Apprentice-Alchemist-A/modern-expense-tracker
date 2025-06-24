@@ -46,7 +46,7 @@ export function MonthlySummary({ total, change, isLoading, className }: MonthlyS
   }
   
   return (
-    <Card className={cn("hover:shadow-md transition-shadow", className)}>
+    <Card className={cn("card-interactive", className)}>
       <CardContent className="p-6">
         <div className="space-y-4">
           <div className="flex items-center justify-between">

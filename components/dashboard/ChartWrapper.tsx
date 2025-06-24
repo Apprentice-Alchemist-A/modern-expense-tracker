@@ -47,7 +47,7 @@ export function ChartWrapper({
   }
 
   return (
-    <Card className={cn("hover:shadow-md transition-shadow", className)}>
+    <Card className={cn("card-interactive", className)}>
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>

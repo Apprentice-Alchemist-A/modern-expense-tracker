@@ -49,13 +49,13 @@ export function Toast({
   const getStyles = () => {
     switch (type) {
       case 'success':
-        return 'bg-green-50 border-green-200 text-green-800'
+        return 'bg-success-50 border-success-200 text-success-800'
       case 'error':
-        return 'bg-red-50 border-red-200 text-red-800'
+        return 'bg-error-50 border-error-200 text-error-800'
       case 'warning':
-        return 'bg-yellow-50 border-yellow-200 text-yellow-800'
+        return 'bg-warning-50 border-warning-200 text-warning-800'
       case 'info':
-        return 'bg-blue-50 border-blue-200 text-blue-800'
+        return 'bg-info-50 border-info-200 text-info-800'
       default:
         return 'bg-gray-50 border-gray-200 text-gray-800'
     }
@@ -64,13 +64,13 @@ export function Toast({
   const getIconColor = () => {
     switch (type) {
       case 'success':
-        return 'text-green-500'
+        return 'text-success-500'
       case 'error':
-        return 'text-red-500'
+        return 'text-error-500'
       case 'warning':
-        return 'text-yellow-500'
+        return 'text-warning-500'
       case 'info':
-        return 'text-blue-500'
+        return 'text-info-500'
       default:
         return 'text-gray-500'
     }

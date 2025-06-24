@@ -92,7 +92,7 @@ export default function DashboardPage() {
           <PageHeader
             title="ダッシュボード"
             subtitle="支出の概要と分析"
-            action={
+            actions={
               <Button 
                 variant="primary" 
                 size="sm"

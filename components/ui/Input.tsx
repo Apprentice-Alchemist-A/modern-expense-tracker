@@ -39,7 +39,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       filled: cn(
         "border-0 bg-primary-100 text-primary-900 placeholder-primary-500",
         "hover:bg-primary-50 focus:bg-white focus:ring-primary-500",
-        error && "bg-red-50 focus:bg-red-50 focus:ring-error"
+        error && "bg-error-50 focus:bg-error-50 focus:ring-error"
       ),
       minimal: cn(
         "border-0 border-b-2 border-primary-200 bg-transparent text-primary-900 placeholder-primary-400 rounded-none",

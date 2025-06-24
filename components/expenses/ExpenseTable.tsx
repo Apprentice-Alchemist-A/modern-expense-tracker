@@ -6,6 +6,7 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useDeleteConfirm } from '@/hooks/useDeleteConfirm'
 import { cn } from '@/lib/utils/cn'
 import { SortField, SortDirection, SortState } from './ExpenseFilters'
+import { ExpenseSort } from '@/lib/supabase/queries'
 
 interface ExpenseTableProps {
   expenses: Array<{
@@ -32,8 +33,8 @@ interface ExpenseTableProps {
       note: string
     }>
   }>
-  sort?: SortState
-  onSortChange?: (sort: SortState) => void
+  sort?: ExpenseSort | undefined
+  onSortChange?: (sort: ExpenseSort | undefined) => void
   onEdit?: (expenseId: string) => void
   onDelete?: (expenseId: string) => void
   onView?: (expenseId: string) => void
@@ -73,20 +74,24 @@ export function ExpenseTable({ expenses, sort, onSortChange, onEdit, onDelete, o
   const handleSort = (field: SortField) => {
     if (!onSortChange) return
     
-    if (sort?.field === field) {
+    // SortFieldからExpenseSort.fieldへの変換
+    const expenseField = field === 'store' ? 'category' : field as ExpenseSort['field']
+    
+    if (sort?.field === expenseField) {
       // 同じフィールドの場合は方向を切り替え
       onSortChange({
-        field,
+        field: expenseField,
         direction: sort.direction === 'asc' ? 'desc' : 'asc'
       })
     } else {
       // 異なるフィールドの場合は降順で開始
-      onSortChange({ field, direction: 'desc' })
+      onSortChange({ field: expenseField, direction: 'desc' })
     }
   }
 
   const getSortIcon = (field: SortField) => {
-    if (sort?.field !== field) {
+    const expenseField = field === 'store' ? 'category' : field as ExpenseSort['field']
+    if (sort?.field !== expenseField) {
       return <Icon name="chevron-up" category="ui" size="xs" className="opacity-30" />
     }
     return (
@@ -214,7 +219,7 @@ export function ExpenseTable({ expenses, sort, onSortChange, onEdit, onDelete, o
                         size="xs"
                         onClick={() => requestDelete(expense.id)}
                         title="削除"
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        className="text-error-600 hover:text-error-700 hover:bg-error-50"
                         disabled={isDeleting}
                       >
                         <Icon name="trash" category="ui" size="xs" />

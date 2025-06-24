@@ -10,6 +10,7 @@ interface IconProps {
   variant?: 'default' | 'success' | 'warning' | 'error' | 'primary' | 'white'
   className?: string
   alt?: string
+  style?: React.CSSProperties
 }
 
 const sizeClasses = {
@@ -25,7 +26,8 @@ export function Icon({
   size = 'md', 
   variant = 'default',
   className = '',
-  alt
+  alt,
+  style
 }: IconProps) {
   const [svgContent, setSvgContent] = useState<string>('')
   const iconPath = `/icons/${category}/${name}.svg`
@@ -89,6 +91,7 @@ export function Icon({
     <div 
       className={cn(sizeClasses[size], "flex items-center justify-center", className)}
       dangerouslySetInnerHTML={{ __html: processedSvg }}
+      style={style}
       role="img"
       aria-label={alt || `${name} icon`}
     />

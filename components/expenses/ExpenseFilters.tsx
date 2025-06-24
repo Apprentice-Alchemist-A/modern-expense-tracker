@@ -31,8 +31,8 @@ export interface SortState {
 interface ExpenseFiltersProps {
   filters: ExpenseFiltersType
   onFiltersChange: (filters: ExpenseFiltersType) => void
-  sort: ExpenseSort | null
-  onSortChange: (sort: ExpenseSort | null) => void
+  sort: ExpenseSort | undefined
+  onSortChange: (sort: ExpenseSort | undefined) => void
   onResetAll?: () => void
   totalCount: number
   filteredCount: number
@@ -93,7 +93,7 @@ export function ExpenseFilters({
     } else {
       // フォールバック: 個別にクリア
       onFiltersChange({})
-      onSortChange(null)
+      onSortChange(undefined)
     }
   }
 
@@ -215,7 +215,7 @@ export function ExpenseFilters({
         <div className="bg-primary-50 rounded-lg p-4 space-y-4">
           {/* 日付フィルター */}
           <div>
-            <label className="block text-sm font-medium text-primary-700 mb-2">
+            <label className="form-label">
               日付範囲
             </label>
             <DateRangePicker
@@ -236,7 +236,7 @@ export function ExpenseFilters({
 
           {/* 金額フィルター */}
           <div>
-            <label className="block text-sm font-medium text-primary-700 mb-2">
+            <label className="form-label">
               金額範囲
             </label>
             <div className="flex items-center space-x-2">
@@ -263,13 +263,13 @@ export function ExpenseFilters({
 
           {/* カテゴリフィルター */}
           <div>
-            <label className="block text-sm font-medium text-primary-700 mb-2">
+            <label className="form-label">
               カテゴリ
             </label>
             {masterDataLoading ? (
               <div className="text-sm text-primary-500">読み込み中...</div>
             ) : masterDataError ? (
-              <div className="text-sm text-red-500">データ取得エラー: {masterDataError}</div>
+              <div className="text-sm text-error-500">データ取得エラー: {masterDataError}</div>
             ) : (
               <div className="flex flex-wrap gap-2">
                 {categories.map((category) => (
@@ -290,13 +290,13 @@ export function ExpenseFilters({
 
           {/* 支払方法フィルター */}
           <div>
-            <label className="block text-sm font-medium text-primary-700 mb-2">
+            <label className="form-label">
               支払方法
             </label>
             {masterDataLoading ? (
               <div className="text-sm text-primary-500">読み込み中...</div>
             ) : masterDataError ? (
-              <div className="text-sm text-red-500">データ取得エラー: {masterDataError}</div>
+              <div className="text-sm text-error-500">データ取得エラー: {masterDataError}</div>
             ) : (
               <div className="flex flex-wrap gap-2">
                 {paymentMethods.map((method) => (

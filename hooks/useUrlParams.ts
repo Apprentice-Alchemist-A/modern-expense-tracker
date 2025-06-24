@@ -6,7 +6,7 @@ import { ExpenseFilters, ExpenseSort } from '@/lib/supabase/queries'
 
 export interface UrlParamsState {
   filters: ExpenseFilters
-  sort: ExpenseSort | null
+  sort: ExpenseSort | undefined
   page: number
   itemsPerPage: number
 }
@@ -14,7 +14,7 @@ export interface UrlParamsState {
 export interface UseUrlParamsReturn {
   state: UrlParamsState
   updateFilters: (filters: ExpenseFilters) => void
-  updateSort: (sort: ExpenseSort | null) => void
+  updateSort: (sort: ExpenseSort | undefined) => void
   updatePage: (page: number) => void
   updateItemsPerPage: (itemsPerPage: number) => void
   resetAll: () => void
@@ -23,7 +23,7 @@ export interface UseUrlParamsReturn {
 // デフォルト値
 const DEFAULT_STATE: UrlParamsState = {
   filters: {},
-  sort: null,
+  sort: undefined,
   page: 1,
   itemsPerPage: 20
 }
@@ -80,7 +80,7 @@ export function useUrlParams(): UseUrlParamsReturn {
     if (searchText) filters.searchText = searchText
 
     // ソート条件の復元
-    let sort: ExpenseSort | null = null
+    let sort: ExpenseSort | undefined = undefined
     const sortField = searchParams.get(PARAM_KEYS.sortField)
     const sortDirection = searchParams.get(PARAM_KEYS.sortDirection)
     
@@ -195,7 +195,7 @@ export function useUrlParams(): UseUrlParamsReturn {
     router.push(fullUrl, { scroll: false })
   }, [searchParams.toString(), router])
 
-  const updateSort = useCallback((sort: ExpenseSort | null) => {
+  const updateSort = useCallback((sort: ExpenseSort | undefined) => {
     const params = new URLSearchParams(searchParams.toString())
     
     // ソートパラメータを削除
