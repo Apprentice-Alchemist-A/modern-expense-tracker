@@ -12,12 +12,16 @@ interface AppLayoutProps {
   children: ReactNode
   sidebarItems?: SidebarItem[]
   className?: string
+  userEmail?: string
+  hideAuthSection?: boolean
 }
 
 export function AppLayout({ 
   children, 
   sidebarItems = [],
-  className 
+  className,
+  userEmail,
+  hideAuthSection = false
 }: AppLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const { user, loading } = useAuth()
@@ -62,17 +66,27 @@ export function AppLayout({
           </div>
 
           <div className="flex items-center space-x-4">
-            {user ? (
-              <UserMenu user={user} loading={loading} />
-            ) : (
-              <Button 
-                variant="primary" 
-                size="sm"
-                onClick={handleSignIn}
-                disabled={loading}
-              >
-                {loading ? 'Loading...' : 'ログイン'}
-              </Button>
+            {!hideAuthSection && (
+              <>
+                {user ? (
+                  <UserMenu user={user} loading={loading} />
+                ) : (
+                  <Button 
+                    variant="primary" 
+                    size="sm"
+                    onClick={handleSignIn}
+                    disabled={loading}
+                  >
+                    {loading ? 'Loading...' : 'ログイン'}
+                  </Button>
+                )}
+              </>
+            )}
+            {hideAuthSection && userEmail && (
+              <div className="flex items-center gap-2 text-sm text-primary-600">
+                <span>デモユーザー:</span>
+                <span className="font-medium">{userEmail}</span>
+              </div>
             )}
           </div>
         </header>

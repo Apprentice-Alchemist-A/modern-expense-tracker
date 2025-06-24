@@ -1,120 +1,184 @@
-import Link from 'next/link'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card'
+'use client'
+
 import { Button } from '@/components/ui/Button'
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card'
 import { Icon } from '@/components/ui/Icon'
+import Link from 'next/link'
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="min-h-screen bg-primary-50 p-8">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>経費・食事管理アプリ</CardTitle>
-            <CardDescription>
-              Notion風の洗練された経費管理アプリケーション
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-              <h4 className="font-semibold text-blue-900 mb-2">📈 開発状況（2025年6月22日）</h4>
-              <ul className="text-sm text-blue-800 space-y-1">
-                <li>✅ <strong>UIシステム完成</strong>: デザインシステム、コンポーネント、レイアウト</li>
-                <li>✅ <strong>認証システム完成</strong>: Supabase Auth + Google OAuth</li>
-                <li>✅ <strong>データベース設計完成</strong>: 新スキーマ（stores, tags, templates対応）</li>
-                <li>✅ <strong>SVGアイコンシステム完成</strong>: 全25種類のアイコン実装</li>
-                <li>✅ <strong>支出表示機能完成</strong>: カード・リスト・テーブル表示切り替え</li>
-                <li>🔄 <strong>現在開発中</strong>: フィルター機能、新規追加フォーム</li>
-                <li>📋 <strong>今後の予定</strong>: Vercelデプロイ、本格運用開始</li>
-              </ul>
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100">
+      {/* Header */}
+      <header className="border-b border-primary-200 bg-white/80 backdrop-blur-sm">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Icon name="analytics" category="navigation" size="md" className="text-primary-600" />
+              <h1 className="text-xl font-bold text-primary-900">Modern Expense Tracker</h1>
             </div>
-            
-            <p className="text-primary-700">
-              以下のページで各機能をプレビューできます：
+            <div className="flex items-center gap-4">
+              <Link href="/demo-dashboard">
+                <Button variant="outline">デモを見る</Button>
+              </Link>
+              <Link href="/dashboard">
+                <Button>ログインして使用</Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="container mx-auto px-4 py-16">
+        <div className="text-center max-w-4xl mx-auto">
+          <h2 className="text-5xl font-bold text-primary-900 mb-6">
+            シンプルで美しい<br />
+            <span className="text-primary-600">経費管理アプリ</span>
+          </h2>
+          <p className="text-xl text-primary-700 mb-8 leading-relaxed">
+            Notion風の洗練されたUIで、日々の支出を効率的に管理。<br />
+            直感的な操作で家計簿をもっと身近に。
+          </p>
+          <div className="flex items-center justify-center gap-4">
+            <Link href="/demo-dashboard">
+              <Button size="lg" className="px-8">
+                <Icon name="play" category="actions" size="sm" className="mr-2" />
+                デモを体験
+              </Button>
+            </Link>
+            <Link href="/dashboard">
+              <Button variant="outline" size="lg" className="px-8">
+                <Icon name="user" category="navigation" size="sm" className="mr-2" />
+                ログインして使用
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Features */}
+      <section className="container mx-auto px-4 py-16">
+        <h3 className="text-3xl font-bold text-primary-900 text-center mb-12">
+          主な機能
+        </h3>
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4">
+                <Icon name="analytics" category="navigation" size="md" className="text-primary-600" />
+              </div>
+              <CardTitle>リアルタイム分析</CardTitle>
+              <CardDescription>
+                支出データをリアルタイムで分析し、美しいグラフで可視化
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="w-12 h-12 bg-success-100 rounded-lg flex items-center justify-center mb-4">
+                <Icon name="search" category="actions" size="md" className="text-success-600" />
+              </div>
+              <CardTitle>高度なフィルタリング</CardTitle>
+              <CardDescription>
+                日付範囲、カテゴリ、金額などの条件で素早く絞り込み
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="w-12 h-12 bg-warning-100 rounded-lg flex items-center justify-center mb-4">
+                <Icon name="settings" category="navigation" size="md" className="text-warning-600" />
+              </div>
+              <CardTitle>カスタマイズ可能</CardTitle>
+              <CardDescription>
+                自分好みにカテゴリや支払方法をカスタマイズ
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
+      </section>
+
+      {/* Demo Section */}
+      <section className="bg-white py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h3 className="text-3xl font-bold text-primary-900 mb-4">機能をお試しください</h3>
+            <p className="text-lg text-primary-700">
+              ログイン不要で主要機能をプレビューできます
             </p>
-            
-            <div className="space-y-6">
-              {/* メイン機能 */}
-              <div>
-                <h3 className="text-lg font-semibold text-primary-900 mb-3">🚀 メイン機能</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <Link href="/expenses">
-                    <Button variant="primary" className="w-full justify-start">
-                      <Icon name="expense" category="navigation" size="sm" className="mr-2" />
-                      支出一覧（メイン機能）
-                    </Button>
-                  </Link>
-                  
-                  <Link href="/test-icons">
-                    <Button variant="secondary" className="w-full justify-start">
-                      🎨 アイコンテスト（SVG確認）
-                    </Button>
-                  </Link>
-                </div>
-              </div>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            <Link href="/demo-dashboard">
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                <CardHeader>
+                  <Icon name="analytics" category="navigation" size="md" className="text-primary-600 mb-2" />
+                  <CardTitle>ダッシュボード</CardTitle>
+                  <CardDescription>
+                    支出サマリーとグラフ分析
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
 
-              {/* データベース・認証テスト */}
-              <div>
-                <h3 className="text-lg font-semibold text-primary-900 mb-3">🗄️ データベース・認証</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <Link href="/demo/auth-layout">
-                    <Button variant="secondary" className="w-full justify-start">
-                      🔐 認証レイアウト
-                    </Button>
-                  </Link>
-                  
-                  <Link href="/test-supabase">
-                    <Button variant="secondary" className="w-full justify-start">
-                      📊 Supabase接続テスト（旧）
-                    </Button>
-                  </Link>
-                  
-                  <Link href="/test-new-db">
-                    <Button variant="secondary" className="w-full justify-start">
-                      🆕 新データベーステスト
-                    </Button>
-                  </Link>
-                </div>
-              </div>
+            <Link href="/demo-expenses">
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                <CardHeader>
+                  <Icon name="expense" category="navigation" size="md" className="text-success-600 mb-2" />
+                  <CardTitle>支出一覧</CardTitle>
+                  <CardDescription>
+                    フィルター・ソート機能付き
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
 
-              {/* UIコンポーネント */}
-              <div>
-                <h3 className="text-lg font-semibold text-primary-900 mb-3">🎛️ UIコンポーネント</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <Link href="/demo">
-                    <Button variant="secondary" className="w-full justify-start">
-                      📋 UIコンポーネント一覧
-                    </Button>
-                  </Link>
-                  
-                  <Link href="/demo/components">
-                    <Button variant="secondary" className="w-full justify-start">
-                      🧩 基本コンポーネント
-                    </Button>
-                  </Link>
-                  
-                  <Link href="/demo/layout">
-                    <Button variant="secondary" className="w-full justify-start">
-                      📐 レイアウトプレビュー
-                    </Button>
-                  </Link>
-                  
-                  <Link href="/demo/icons">
-                    <Button variant="secondary" className="w-full justify-start">
-                      🎯 アイコンプレビュー（旧）
-                    </Button>
-                  </Link>
-                  
-                  <Link href="/demo/icons-new">
-                    <Button variant="secondary" className="w-full justify-start">
-                      ✨ アイコンプレビュー（新）
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            <Link href="/demo">
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                <CardHeader>
+                  <Icon name="settings" category="navigation" size="md" className="text-warning-600 mb-2" />
+                  <CardTitle>UIコンポーネント</CardTitle>
+                  <CardDescription>
+                    デザインシステム一覧
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="bg-primary-600 text-white py-16">
+        <div className="container mx-auto px-4 text-center">
+          <h3 className="text-3xl font-bold mb-4">今すぐ始めてみませんか？</h3>
+          <p className="text-xl text-primary-100 mb-8">
+            アカウント作成は簡単。Googleアカウントで即座に利用開始できます。
+          </p>
+          <div className="flex items-center justify-center gap-4">
+            <Link href="/demo-dashboard">
+              <Button variant="outline" size="lg" className="bg-white text-primary-600 hover:bg-primary-50 px-8">
+                デモを試す
+              </Button>
+            </Link>
+            <Link href="/dashboard">
+              <Button variant="secondary" size="lg" className="px-8">
+                本格利用を始める
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-primary-50 border-t border-primary-200 py-8">
+        <div className="container mx-auto px-4 text-center">
+          <p className="text-primary-600">
+            © 2025 Modern Expense Tracker. Built with Next.js & Supabase.
+          </p>
+        </div>
+      </footer>
     </div>
   )
 }

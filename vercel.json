@@ -19,10 +19,11 @@
       ]
     }
   ],
-  "rewrites": [
+  "redirects": [
     {
-      "source": "/",
-      "destination": "/dashboard"
+      "source": "/demo",
+      "destination": "/demo-dashboard",
+      "permanent": false
     }
   ]
 }
