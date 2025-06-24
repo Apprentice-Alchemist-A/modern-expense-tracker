@@ -26,10 +26,20 @@ Install Command: npm install
 Development Command: npm run dev
 ```
 
-## 既知の問題
-1. **@/ パスエイリアス解決失敗**
+## 解決済み問題
+1. **@/ パスエイリアス解決問題** ✅ **解決済み**
+   - 原因: next.config.js のWebpack設定不完全
+   - 解決: path.resolve(__dirname) を使用した堅牢な設定
    - ローカル: ✅ 動作
-   - Vercel: ❌ 失敗
+   - Vercel: ✅ 動作
+
+2. **tailwindcss モジュール不足** ✅ **解決済み**
+   - 原因: devDependenciesがVercelプロダクションビルドで除外
+   - 解決: dependencies への移動
+
+3. **ビルドコマンド競合** ✅ **解決済み**
+   - 原因: package.json scripts設定とVercel期待値の不一致
+   - 解決: 正確なNext.jsパス指定 + vercel.json簡素化
 
 ## トラブルシューティング手順
 1. エラーログを `latest-error.md` に貼り付け
