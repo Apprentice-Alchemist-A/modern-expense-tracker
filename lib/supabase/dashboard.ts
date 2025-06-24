@@ -1,5 +1,6 @@
 import { getSupabaseClient } from './browser-client'
 import { startOfMonth, endOfMonth, subMonths, format } from 'date-fns'
+import { TrendData } from '@/types/dashboard'
 
 export interface DashboardData {
   monthlyTotal: number
@@ -37,6 +38,13 @@ export interface DashboardData {
 export class DashboardService {
   private supabase = getSupabaseClient()
   
+  /**
+   * 推移データのみを取得（期間変更用）
+   */
+  async getTrendData(months: number): Promise<TrendData[]> {
+    return this.getMonthlyTrend(months)
+  }
+
   /**
    * ダッシュボードデータを取得
    */

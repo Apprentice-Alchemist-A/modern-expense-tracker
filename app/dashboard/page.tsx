@@ -47,16 +47,15 @@ export default function DashboardPage() {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>('')
-  const [trendPeriod, setTrendPeriod] = useState(6)
   
   // ダッシュボードデータの取得
-  const fetchDashboardData = async (months: number = trendPeriod) => {
+  const fetchDashboardData = async () => {
     if (!user) return
     
     try {
       setLoading(true)
       setError('')
-      const data = await dashboardService.getDashboardData(months)
+      const data = await dashboardService.getDashboardData()
       setDashboardData(data)
     } catch (err) {
       console.error('Failed to fetch dashboard data:', err)
@@ -64,12 +63,6 @@ export default function DashboardPage() {
     } finally {
       setLoading(false)
     }
-  }
-  
-  // 推移期間変更処理
-  const handleTrendPeriodChange = (months: number) => {
-    setTrendPeriod(months)
-    fetchDashboardData(months)
   }
   
   useEffect(() => {
@@ -173,9 +166,8 @@ export default function DashboardPage() {
               
               {/* 支出推移グラフ */}
               <ExpenseTrendChart
-                data={dashboardData?.monthlyTrend || []}
+                initialData={dashboardData?.monthlyTrend || []}
                 isLoading={loading}
-                onPeriodChange={handleTrendPeriodChange}
               />
               
               {/* カテゴリ別円グラフ */}
