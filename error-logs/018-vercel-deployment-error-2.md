@@ -102,7 +102,35 @@
 
 ## 解決策
 
-（エラーを確認後に記載）
+### 問題の根本原因
+**@/パスエイリアスが解決できない** - Vercelのビルド環境で TypeScript のパスマッピングが正しく処理されていない
+
+### 実施した修正
+
+#### 1. **重複ディレクトリの削除**
+- `/expense-tracker-redesign/expense-tracker-redesign/` という重複構造を削除
+- パス解決の混乱を解消
+
+#### 2. **next.config.js の強化**
+```javascript
+const nextConfig = {
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': '.',
+    }
+    return config
+  },
+}
+```
+
+#### 3. **package.json の最適化**
+- 標準的なNext.jsコマンドに変更 (`next dev`, `next build`)
+- ESLint設定を追加
+
+#### 4. **vercel.json の改善**
+- `npm ci` を使用してより安定したインストール
+- ビルドコマンドを最適化
 
 ## 関連ファイル
 
