@@ -98,7 +98,7 @@ export default function DashboardPage() {
                 size="sm"
                 onClick={() => router.push('/expenses/new')}
               >
-                <Icon name="plus" category="ui" size="sm" className="mr-2" />
+                <Icon name="plus" category="ui" size="sm" variant="white" className="mr-2" />
                 新規追加
               </Button>
             }
@@ -115,10 +115,10 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <button
               onClick={() => handleQuickAction('add')}
-              className="p-4 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors flex items-center gap-3"
+              className="p-4 bg-primary-50 hover:bg-primary-100 rounded-lg border border-primary-200 hover:border-primary-300 transition-all shadow-sm hover:shadow-md flex items-center gap-3"
             >
               <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
-                <Icon name="plus" category="ui" size="sm" className="text-white" />
+                <Icon name="plus" category="ui" size="sm" variant="white" />
               </div>
               <div className="text-left">
                 <p className="font-medium text-primary-900">支出を記録</p>
@@ -128,10 +128,10 @@ export default function DashboardPage() {
             
             <button
               onClick={() => handleQuickAction('view')}
-              className="p-4 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors flex items-center gap-3"
+              className="p-4 bg-primary-50 hover:bg-primary-100 rounded-lg border border-primary-200 hover:border-primary-300 transition-all shadow-sm hover:shadow-md flex items-center gap-3"
             >
               <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
-                <Icon name="list" category="ui" size="sm" className="text-white" />
+                <Icon name="list" category="ui" size="sm" variant="white" />
               </div>
               <div className="text-left">
                 <p className="font-medium text-primary-900">一覧を見る</p>
@@ -141,10 +141,10 @@ export default function DashboardPage() {
             
             <button
               onClick={() => handleQuickAction('report')}
-              className="p-4 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors flex items-center gap-3"
+              className="p-4 bg-primary-50 hover:bg-primary-100 rounded-lg border border-primary-200 hover:border-primary-300 transition-all shadow-sm hover:shadow-md flex items-center gap-3"
             >
               <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
-                <Icon name="document" category="ui" size="sm" className="text-white" />
+                <Icon name="document" category="ui" size="sm" variant="white" />
               </div>
               <div className="text-left">
                 <p className="font-medium text-primary-900">レポート</p>

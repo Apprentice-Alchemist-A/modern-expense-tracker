@@ -21,7 +21,7 @@ export function RecentExpenses({ expenses, isLoading, className }: RecentExpense
       size="sm"
       onClick={() => router.push('/expenses/new')}
     >
-      <Icon name="plus" category="ui" size="sm" className="mr-2" />
+      <Icon name="plus" category="ui" size="sm" variant="white" className="mr-2" />
       支出を記録する
     </Button>
   )
@@ -34,7 +34,7 @@ export function RecentExpenses({ expenses, isLoading, className }: RecentExpense
       onClick={() => router.push('/expenses')}
     >
       すべて見る
-      <Icon name="arrow-right" category="ui" size="sm" className="ml-1" />
+      <Icon name="arrow-right" category="ui" size="sm" variant="default" className="ml-1" />
     </Button>
   )
 
@@ -101,7 +101,7 @@ export function RecentExpenses({ expenses, isLoading, className }: RecentExpense
                 onClick={() => router.push('/expenses')}
               >
                 すべての支出を見る
-                <Icon name="arrow-right" category="ui" size="sm" className="ml-2" />
+                <Icon name="arrow-right" category="ui" size="sm" variant="default" className="ml-2" />
               </Button>
             </div>
           )}
