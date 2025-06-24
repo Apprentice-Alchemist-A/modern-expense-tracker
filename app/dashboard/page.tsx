@@ -67,7 +67,7 @@ export default function DashboardPage() {
   
   useEffect(() => {
     fetchDashboardData()
-  }, [user])
+  }, [user, fetchDashboardData])
   
   // クイックアクション
   const handleQuickAction = (action: string) => {

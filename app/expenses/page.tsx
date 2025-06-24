@@ -148,7 +148,7 @@ function ExpensesPageContent() {
 
     window.addEventListener('focus', handleFocus)
     return () => window.removeEventListener('focus', handleFocus)
-  }, [user, loading])
+  }, [user, loading, fetchExpenses])
 
   // 編集ハンドラー
   const handleEdit = (expenseId: string) => {
