@@ -7,6 +7,7 @@ import { PeriodSelector } from './PeriodSelector'
 import { formatCurrency, formatMonth } from '@/lib/utils/formatters'
 import { CHART_CONFIG, DEFAULTS } from '@/lib/constants/dashboard'
 import { TrendData, DashboardComponentProps, PeriodOption } from '@/types/dashboard'
+import { TooltipProps } from '@/types/charts'
 import { DashboardService } from '@/lib/supabase/dashboard'
 
 interface ExpenseTrendChartProps extends DashboardComponentProps {
@@ -59,7 +60,7 @@ export function ExpenseTrendChart({ initialData = [], initialPeriod = DEFAULTS.p
   }, [data])
   
   // カスタムツールチップ
-  const CustomTooltip = useCallback(({ active, payload, label }: any) => {
+  const CustomTooltip = useCallback(({ active, payload, label }: TooltipProps<TrendData>) => {
     if (!active || !payload?.length || !label) return null
     
     // 防御的チェック

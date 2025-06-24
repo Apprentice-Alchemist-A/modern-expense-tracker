@@ -1,14 +1,16 @@
 import { getSupabaseClient } from './browser-client'
 
 export const signInWithGoogle = async () => {
-  console.log('signInWithGoogle: Starting Google OAuth flow')
   const supabase = getSupabaseClient()
   const currentPath = window.location.pathname
+  
+  // 本番環境では環境変数を優先、開発環境では現在のオリジンを使用
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin
   
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${window.location.origin}/auth/callback?redirectTo=${encodeURIComponent(currentPath)}`,
+      redirectTo: `${baseUrl}/auth/callback?redirectTo=${encodeURIComponent(currentPath)}`,
     },
   })
   
@@ -17,12 +19,10 @@ export const signInWithGoogle = async () => {
     throw error
   }
   
-  console.log('signInWithGoogle: OAuth initiated successfully')
   return data
 }
 
 export const signOut = async () => {
-  console.log('signOut: Starting sign out process')
   const supabase = getSupabaseClient()
   const { error } = await supabase.auth.signOut()
   
@@ -30,8 +30,6 @@ export const signOut = async () => {
     console.error('Error signing out:', error)
     throw error
   }
-  
-  console.log('signOut: Sign out completed successfully')
 }
 
 export const getCurrentUser = async () => {

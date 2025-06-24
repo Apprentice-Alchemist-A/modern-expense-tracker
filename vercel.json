@@ -1,6 +1,4 @@
 {
-  "buildCommand": "npm install && npm run build",
-  "outputDirectory": ".next",
   "framework": "nextjs",
   "headers": [
     {
@@ -21,10 +19,11 @@
       ]
     }
   ],
-  "rewrites": [
+  "redirects": [
     {
-      "source": "/",
-      "destination": "/dashboard"
+      "source": "/demo",
+      "destination": "/demo-dashboard",
+      "permanent": false
     }
   ]
 }
