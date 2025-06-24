@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Icon } from '@/components/ui/Icon'
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { cn } from '@/lib/utils/cn'
+import { TooltipProps, LegendProps } from '@/types/charts'
 
 interface CategoryData {
   categoryId: string
@@ -29,7 +30,7 @@ export function CategoryPieChart({ data, isLoading, className }: CategoryPieChar
   }
   
   // Rechartsのカスタムツールチップ
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: TooltipProps<CategoryData>) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload
       return (
@@ -52,10 +53,12 @@ export function CategoryPieChart({ data, isLoading, className }: CategoryPieChar
   }
   
   // カスタムレジェンド
-  const CustomLegend = ({ payload }: any) => {
+  const CustomLegend = ({ payload }: LegendProps) => {
+    if (!payload) return null
+    
     return (
       <div className="grid grid-cols-2 gap-2 mt-4">
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry, index) => (
           <div key={`legend-${index}`} className="flex items-center gap-2 text-sm">
             <div 
               className="w-3 h-3 rounded-full flex-shrink-0" 

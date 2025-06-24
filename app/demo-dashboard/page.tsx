@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import React from 'react'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { MonthlySummary } from '@/components/dashboard/MonthlySummary'
@@ -103,9 +103,7 @@ const demoData = {
       date: '2025-01-28',
       categoryName: '食費',
       categoryIcon: 'food',
-      categoryColor: '#10b981',
-      paymentMethodName: 'クレジットカード',
-      paymentMethodIcon: 'credit-card'
+      categoryColor: '#10b981'
     },
     {
       id: '2', 
@@ -114,9 +112,7 @@ const demoData = {
       date: '2025-01-28',
       categoryName: '食費',
       categoryIcon: 'food',
-      categoryColor: '#10b981',
-      paymentMethodName: '現金',
-      paymentMethodIcon: 'cash'
+      categoryColor: '#10b981'
     },
     {
       id: '3',
@@ -125,9 +121,7 @@ const demoData = {
       date: '2025-01-27',
       categoryName: '交通費',
       categoryIcon: 'transport',
-      categoryColor: '#3b82f6',
-      paymentMethodName: 'ICカード',
-      paymentMethodIcon: 'ic-card'
+      categoryColor: '#3b82f6'
     },
     {
       id: '4',
@@ -136,9 +130,7 @@ const demoData = {
       date: '2025-01-26',
       categoryName: '娯楽',
       categoryIcon: 'entertainment',
-      categoryColor: '#f59e0b',
-      paymentMethodName: 'クレジットカード',
-      paymentMethodIcon: 'credit-card'
+      categoryColor: '#f59e0b'
     },
     {
       id: '5',
@@ -147,9 +139,7 @@ const demoData = {
       date: '2025-01-25',
       categoryName: '日用品',
       categoryIcon: 'shopping',
-      categoryColor: '#ef4444',
-      paymentMethodName: 'クレジットカード',
-      paymentMethodIcon: 'credit-card'
+      categoryColor: '#ef4444'
     }
   ],
   // ExpenseTrendChart用データ
