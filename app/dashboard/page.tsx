@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { MonthlySummary } from '@/components/dashboard/MonthlySummary'
@@ -49,7 +49,7 @@ export default function DashboardPage() {
   const [error, setError] = useState<string>('')
   
   // ダッシュボードデータの取得
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     if (!user) return
     
     try {
@@ -63,11 +63,11 @@ export default function DashboardPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user])
   
   useEffect(() => {
     fetchDashboardData()
-  }, [user, fetchDashboardData])
+  }, [fetchDashboardData])
   
   // クイックアクション
   const handleQuickAction = (action: string) => {

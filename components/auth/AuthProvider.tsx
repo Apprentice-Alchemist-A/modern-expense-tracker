@@ -33,18 +33,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // 初回のセッション取得
     const getInitialSession = async () => {
       try {
-        console.log('AuthProvider: Starting session check...')
-        
         const { data: { session }, error } = await supabase.auth.getSession()
         
         if (!isMounted) return // コンポーネントがアンマウントされている場合は処理しない
-        
-        console.log('AuthProvider: Initial session check:', { 
-          hasSession: !!session,
-          hasUser: !!session?.user,
-          userId: session?.user?.id,
-          error 
-        })
         
         if (error) {
           console.error('AuthProvider: Session error:', error)
@@ -66,7 +57,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // 緊急用タイムアウト（3秒）
     const emergencyTimeout = setTimeout(() => {
       if (isMounted) {
-        console.warn('AuthProvider: Emergency timeout - forcing loading to false')
         setLoading(false)
       }
     }, 3000)
@@ -75,12 +65,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('AuthProvider: Auth state changed:', { 
-        event, 
-        hasSession: !!session,
-        hasUser: !!session?.user,
-        userId: session?.user?.id
-      })
       setUser(session?.user ?? null)
       setLoading(false)
     })
