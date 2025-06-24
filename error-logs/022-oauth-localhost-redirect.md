@@ -116,4 +116,49 @@ NEXT_PUBLIC_APP_URL=https://modern-expense-tracker-app.vercel.app
 
 ---
 
-**ステータス**: 🔧 修正済み（設定確認が必要）
+## 🎯 真の原因が判明 (2025-01-28 追記)
+
+### 根本原因: Supabaseプロジェクト不一致
+
+**問題の核心**: 異なるSupabaseプロジェクトが混在していた
+
+#### プロジェクト使用状況
+- **アプリケーションコード**: `ymbtztejxfgprepzbqtk` プロジェクト
+- **OAuth認証**: `otgwixohboxauaefahfe` プロジェクト (localhost:3000設定)
+
+#### 認証フローでの動作
+1. アプリ: 正しいプロジェクト (`ymbtztejxfgprepzbqtk`) で起動
+2. OAuth: 古いプロジェクト (`otgwixohboxauaefahfe`) が使用される
+3. リダイレクト: 古いプロジェクトのSite URL設定 (localhost:3000) が適用
+
+### 解決方法確定
+
+**現在のプロジェクト (`ymbtztejxfgprepzbqtk`) でOAuth設定を実行**:
+
+1. Supabaseダッシュボード → `ymbtztejxfgprepzbqtk` プロジェクト
+2. Authentication → Providers → Google → Enable
+3. Authentication → Settings → URL Configuration:
+   - Site URL: `https://modern-expense-tracker-app-five.vercel.app`
+   - Redirect URLs: `https://modern-expense-tracker-app-five.vercel.app/auth/callback`
+
+### 調査で判明した事実
+
+- **コード**: 問題なし（適切な実装）
+- **環境変数**: 問題なし（正しく設定済み）
+- **設定**: プロジェクト間の不整合が原因
+
+### OAuth認証フロー詳細ログ
+
+**ステップ2のstateパラメータで発見**:
+```json
+{
+  "site_url": "http://localhost:3000",
+  "referrer": "http://localhost:3000"
+}
+```
+
+これにより、古いSupabaseプロジェクトが認証処理で使用されていることが判明。
+
+---
+
+**ステータス**: ✅ **原因特定完了** - Supabaseプロジェクト設定で解決可能
