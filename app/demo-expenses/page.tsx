@@ -3,11 +3,11 @@
 import { useState } from 'react'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { PageHeader } from '@/components/layout/PageHeader'
-import { ExpenseList } from '@/components/data-display/ExpenseList'
-import { FilterBar } from '@/components/data-display/FilterBar'
-import { ViewToggle } from '@/components/data-display/ViewToggle'
 import { Icon } from '@/components/ui/Icon'
 import { Button } from '@/components/ui/Button'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
+import { Input } from '@/components/ui/Input'
+import { Select } from '@/components/ui/Select'
 import { SidebarItem } from '@/components/layout/Sidebar'
 import Link from 'next/link'
 
@@ -153,65 +153,53 @@ const demoPaymentMethods = [
 type ViewType = 'card' | 'list' | 'table'
 
 export default function DemoExpensesPage() {
-  const [expenses, setExpenses] = useState(demoExpenses)
   const [viewType, setViewType] = useState<ViewType>('card')
   const [filteredData, setFilteredData] = useState(demoExpenses)
+  const [searchText, setSearchText] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('')
+  const [selectedPayment, setSelectedPayment] = useState('')
 
-  const handleFilterChange = (filters: any) => {
+  const handleSearch = (text: string) => {
+    setSearchText(text)
+    applyFilters(text, selectedCategory, selectedPayment)
+  }
+
+  const handleCategoryFilter = (category: string) => {
+    setSelectedCategory(category)
+    applyFilters(searchText, category, selectedPayment)
+  }
+
+  const handlePaymentFilter = (payment: string) => {
+    setSelectedPayment(payment)
+    applyFilters(searchText, selectedCategory, payment)
+  }
+
+  const applyFilters = (search: string, category: string, payment: string) => {
     let filtered = [...demoExpenses]
     
-    // デモ用の簡単なフィルタリング
-    if (filters.search) {
+    if (search) {
       filtered = filtered.filter(expense => 
-        expense.title.toLowerCase().includes(filters.search.toLowerCase()) ||
-        expense.memo?.toLowerCase().includes(filters.search.toLowerCase())
+        expense.title.toLowerCase().includes(search.toLowerCase()) ||
+        expense.memo?.toLowerCase().includes(search.toLowerCase())
       )
     }
     
-    if (filters.category) {
-      filtered = filtered.filter(expense => expense.category === filters.category)
+    if (category) {
+      filtered = filtered.filter(expense => expense.category === category)
     }
     
-    if (filters.paymentMethod) {
-      filtered = filtered.filter(expense => expense.payment_method === filters.paymentMethod)
+    if (payment) {
+      filtered = filtered.filter(expense => expense.payment_method === payment)
     }
     
     setFilteredData(filtered)
   }
 
-  const handleSort = (field: string, direction: 'asc' | 'desc') => {
-    const sorted = [...filteredData].sort((a, b) => {
-      let aValue: any, bValue: any
-      
-      switch (field) {
-        case 'date':
-          aValue = new Date(a.date)
-          bValue = new Date(b.date)
-          break
-        case 'amount':
-          aValue = a.amount
-          bValue = b.amount
-          break
-        case 'title':
-          aValue = a.title
-          bValue = b.title
-          break
-        case 'category':
-          aValue = a.category
-          bValue = b.category
-          break
-        default:
-          return 0
-      }
-      
-      if (direction === 'asc') {
-        return aValue > bValue ? 1 : -1
-      } else {
-        return aValue < bValue ? 1 : -1
-      }
-    })
-    
-    setFilteredData(sorted)
+  const clearFilters = () => {
+    setSearchText('')
+    setSelectedCategory('')
+    setSelectedPayment('')
+    setFilteredData(demoExpenses)
   }
 
   return (
@@ -251,8 +239,11 @@ export default function DemoExpensesPage() {
               title="支出一覧 (デモ)"
               description={`${filteredData.length}件の支出データ`}
             />
-            <div className="flex items-center gap-4">
-              <ViewToggle viewType={viewType} onChange={setViewType} />
+              <div className="flex items-center gap-4">
+              <Button variant="outline" onClick={() => setViewType(viewType === 'card' ? 'table' : 'card')}>
+                <Icon name="settings" category="navigation" size="sm" className="mr-2" />
+                {viewType === 'card' ? 'テーブル表示' : 'カード表示'}
+              </Button>
               <Button 
                 variant="primary"
                 onClick={() => alert('デモ版では追加できません')}
@@ -263,26 +254,118 @@ export default function DemoExpensesPage() {
             </div>
           </div>
 
-          <FilterBar 
-            categories={demoCategories}
-            paymentMethods={demoPaymentMethods}
-            onFilterChange={handleFilterChange}
-            showClearFilters={true}
-            onClearFilters={() => {
-              setFilteredData(demoExpenses)
-            }}
-          />
+          {/* デモ用フィルターバー */}
+          <Card>
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <Input
+                  placeholder="検索..."
+                  value={searchText}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  icon={<Icon name="analytics" category="navigation" size="sm" />}
+                />
+                <Select
+                  value={selectedCategory}
+                  onChange={(e) => handleCategoryFilter(e.target.value)}
+                  options={[
+                    { value: '', label: 'カテゴリ全て' },
+                    ...demoCategories.map(cat => ({ value: cat.name, label: cat.name }))
+                  ]}
+                />
+                <Select
+                  value={selectedPayment}
+                  onChange={(e) => handlePaymentFilter(e.target.value)}
+                  options={[
+                    { value: '', label: '支払方法全て' },
+                    ...demoPaymentMethods.map(pm => ({ value: pm.name, label: pm.name }))
+                  ]}
+                />
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={clearFilters}>
+                    <Icon name="arrow-left" category="actions" size="sm" className="mr-2" />
+                    クリア
+                  </Button>
+                  <Button variant="outline" onClick={() => setViewType(viewType === 'card' ? 'table' : 'card')}>
+                    <Icon name="settings" category="navigation" size="sm" className="mr-2" />
+                    {viewType === 'card' ? 'テーブル' : 'カード'}
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-          <ExpenseList 
-            expenses={filteredData}
-            viewType={viewType}
-            categories={demoCategories}
-            paymentMethods={demoPaymentMethods}
-            onEdit={(expense) => alert('デモ版では編集できません')}
-            onDelete={(id) => alert('デモ版では削除できません')}
-            onSort={handleSort}
-            isLoading={false}
-          />
+          {/* デモ用支出一覧 */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-primary-600">
+                {filteredData.length}件の支出が見つかりました
+              </p>
+            </div>
+            
+            {viewType === 'card' ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredData.map((expense) => (
+                  <Card key={expense.id} className="hover:shadow-md transition-shadow">
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <CardTitle className="text-base">{expense.title}</CardTitle>
+                          <p className="text-sm text-primary-600 mt-1">{expense.date}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-lg font-bold text-primary-900">¥{expense.amount.toLocaleString()}</p>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-sm">
+                          <Icon name="analytics" category="navigation" size="sm" className="text-primary-500" />
+                          <span>{expense.category}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm">
+                          <Icon name="home" category="navigation" size="sm" className="text-primary-500" />
+                          <span>{expense.payment_method}</span>
+                        </div>
+                        {expense.memo && (
+                          <p className="text-sm text-primary-600 mt-2">{expense.memo}</p>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="p-0">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-primary-50">
+                        <tr>
+                          <th className="px-4 py-3 text-left text-sm font-medium text-primary-700">日付</th>
+                          <th className="px-4 py-3 text-left text-sm font-medium text-primary-700">タイトル</th>
+                          <th className="px-4 py-3 text-left text-sm font-medium text-primary-700">カテゴリ</th>
+                          <th className="px-4 py-3 text-left text-sm font-medium text-primary-700">支払方法</th>
+                          <th className="px-4 py-3 text-right text-sm font-medium text-primary-700">金額</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-primary-100">
+                        {filteredData.map((expense) => (
+                          <tr key={expense.id} className="hover:bg-primary-25">
+                            <td className="px-4 py-3 text-sm text-primary-600">{expense.date}</td>
+                            <td className="px-4 py-3 text-sm font-medium text-primary-900">{expense.title}</td>
+                            <td className="px-4 py-3 text-sm text-primary-600">{expense.category}</td>
+                            <td className="px-4 py-3 text-sm text-primary-600">{expense.payment_method}</td>
+                            <td className="px-4 py-3 text-sm font-bold text-primary-900 text-right">¥{expense.amount.toLocaleString()}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </div>
       </AppLayout>
     </div>

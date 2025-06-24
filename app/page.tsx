@@ -42,7 +42,7 @@ export default function HomePage() {
           <div className="flex items-center justify-center gap-4">
             <Link href="/demo-dashboard">
               <Button size="lg" className="px-8">
-                <Icon name="play" category="actions" size="sm" className="mr-2" />
+                <Icon name="arrow-right" category="actions" size="sm" className="mr-2" />
                 デモを体験
               </Button>
             </Link>
@@ -77,7 +77,7 @@ export default function HomePage() {
           <Card className="hover:shadow-lg transition-shadow">
             <CardHeader>
               <div className="w-12 h-12 bg-success-100 rounded-lg flex items-center justify-center mb-4">
-                <Icon name="search" category="actions" size="md" className="text-success-600" />
+                <Icon name="analytics" category="navigation" size="md" className="text-success-600" />
               </div>
               <CardTitle>高度なフィルタリング</CardTitle>
               <CardDescription>

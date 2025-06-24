@@ -123,7 +123,7 @@ export default function DemoDashboardPage() {
       <div className="bg-warning-50 border-b border-warning-200 px-4 py-2">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center gap-2">
-            <Icon name="info" category="actions" size="sm" className="text-warning-600" />
+            <Icon name="home" category="navigation" size="sm" className="text-warning-600" />
             <span className="text-sm text-warning-700 font-medium">
               これはデモページです。実際のデータではありません。
             </span>
@@ -161,7 +161,7 @@ export default function DemoDashboardPage() {
                 variant="primary" 
                 className="hover:shadow-md transition-shadow"
               >
-                <Icon name="plus" category="actions" size="sm" className="mr-2" />
+                <Icon name="arrow-right" category="actions" size="sm" className="mr-2" />
                 支出を記録
               </Button>
             </Link>
@@ -169,14 +169,14 @@ export default function DemoDashboardPage() {
               variant="secondary"
               onClick={() => alert('デモ版では利用できません')}
             >
-              <Icon name="filter" category="actions" size="sm" className="mr-2" />
+              <Icon name="analytics" category="navigation" size="sm" className="mr-2" />
               フィルター
             </Button>
             <Button 
               variant="secondary"
               onClick={() => alert('デモ版では利用できません')}
             >
-              <Icon name="export" category="actions" size="sm" className="mr-2" />
+              <Icon name="arrow-right" category="actions" size="sm" className="mr-2" />
               エクスポート
             </Button>
           </div>
@@ -199,7 +199,7 @@ export default function DemoDashboardPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Icon name="info" category="actions" size="sm" className="text-primary-600" />
+                    <Icon name="home" category="navigation" size="sm" className="text-primary-600" />
                     デモ機能について
                   </CardTitle>
                 </CardHeader>
